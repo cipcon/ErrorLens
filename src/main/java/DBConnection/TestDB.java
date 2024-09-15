@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -14,14 +16,13 @@ public class TestDB {
         try (Connection connection = DBConnection.connectToDB()) {
             String addPass = "INSERT INTO passwort(passwort, datum_geandert) VALUES(?, ?)";
             java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
-            try (PreparedStatement statement = connection.prepareStatement(addPass)) {
-                statement.setString(1, "parola");
-                statement.setDate(2, sqlDate);
-                rowsAffected = statement.executeUpdate();
-                return rowsAffected;
-            } catch (SQLException e) {
-                message = e.getMessage();
-            }
+            PreparedStatement statement = connection.prepareStatement(addPass);
+            String pass = "1234";
+            String hashedPassword = BCrypt.hashpw(pass, BCrypt.gensalt());
+            statement.setString(1, hashedPassword);
+            statement.setDate(2, sqlDate);
+            rowsAffected = statement.executeUpdate();
+            return rowsAffected;
         } catch (SQLException e) {
             message = e.getMessage();
         }
@@ -30,6 +31,7 @@ public class TestDB {
     }
 
     public static void main(String[] args) {
+
         addPassword();
     }
 }
