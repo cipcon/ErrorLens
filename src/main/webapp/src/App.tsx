@@ -1,12 +1,12 @@
-import "./App.css";
-import { Message } from "./Message";
+import React from "react";
+import { Login } from "./components/Login";
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="App">
-      <Message />
+      <Login />
     </div>
   );
-}
+};
 
 export default App;

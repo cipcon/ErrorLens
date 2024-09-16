@@ -2,43 +2,19 @@ package LogIn;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import DBConnection.DBConnection;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class ChangePassword {
     public String changePassword(String password) {
-        boolean newPass = false;
+        LoginService logIn = new LoginService();
+        boolean oldPass = logIn.login(password).getPasswordMatch();
 
-        if (password.isEmpty()) {
-            return "Password is empty. Please type in your new password";
-        }
-
-        // check if the new password = last password
-        try (Connection connection = DBConnection.connectToDB()) {
-            String checkPass = "SELECT passwort FROM passwort";
-
-            PreparedStatement statement = connection.prepareStatement(checkPass);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                String hashedPassword = resultSet.getString("passwort");
-                if (BCrypt.checkpw(password, hashedPassword)) {
-                    return "This is your last password, please choose a new one";
-                } else {
-                    newPass = true;
-                }
-            } else {
-                return "No password found in the database";
-            }
-        } catch (SQLException e) {
-            return e.getMessage();
-        }
-
-        if (newPass) {
+        if (!oldPass) {
             try (Connection connection = DBConnection.connectToDB()) {
                 String changePass = "UPDATE passwort SET passwort = ?, datum_geandert = ?";
                 java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
@@ -60,6 +36,6 @@ public class ChangePassword {
 
     public static void main(String[] args) {
         ChangePassword change = new ChangePassword();
-        System.out.println(change.changePassword("12346"));
+        System.out.println(change.changePassword("1234"));
     }
 }
