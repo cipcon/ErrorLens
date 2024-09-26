@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface LoginResponse {
   message: string;
@@ -14,6 +15,7 @@ export const Login = () => {
     changePassword: "",
   });
   const [loginError, setLoginError] = useState("");
+  const navigate = useNavigate();
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
@@ -33,13 +35,22 @@ export const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(password),
+        body: JSON.stringify({ password }),
       });
 
       console.log(response);
       if (response.ok) {
         const data: LoginResponse = await response.json();
         setLoginResponse(data);
+
+        // Mark the user as logged in
+        localStorage.setItem("isLoggedIn", "true");
+
+        // Store the changePassword value in localStorage
+        localStorage.setItem("changePassword", data.changePassword);
+
+        // Navigate to the homepage
+        navigate("/");
       } else {
         console.log(password);
         setLoginError(

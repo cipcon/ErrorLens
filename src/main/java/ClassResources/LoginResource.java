@@ -11,7 +11,8 @@ import jakarta.ws.rs.core.Response;
 public class LoginResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response login(String password) {
+    public Response login(PasswordRequest request) {
+        String password = request.getPassword();
         LoginService loginService = new LoginService();
         boolean passwordMatch = loginService.login(password).getPasswordMatch();
 
@@ -24,7 +25,9 @@ public class LoginResource {
 
     public static void main(String[] args) {
         LoginResource loginResource = new LoginResource();
-        Response response = loginResource.login("1234");
+        PasswordRequest request = new PasswordRequest();
+        request.setPassword("1234");
+        Response response = loginResource.login(request);
         System.out.println(response.getStatus());
     }
 }
