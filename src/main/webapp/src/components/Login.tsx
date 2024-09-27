@@ -38,7 +38,6 @@ export const Login = () => {
         body: JSON.stringify({ password }),
       });
 
-      console.log(response);
       if (response.ok) {
         const data: LoginResponse = await response.json();
         setLoginResponse(data);
@@ -46,13 +45,10 @@ export const Login = () => {
         // Mark the user as logged in
         localStorage.setItem("isLoggedIn", "true");
 
-        // Store the changePassword value in localStorage
-        localStorage.setItem("changePassword", data.changePassword);
-
-        // Navigate to the homepage
-        navigate("/");
+        // Wait until loginResponse is fully updated before navigating
+        console.log(data.changePassword);
+        navigate("/", { state: data }); // Pass the full loginResponse object
       } else {
-        console.log(password);
         setLoginError(
           "Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das Passwort."
         );
@@ -75,6 +71,7 @@ export const Login = () => {
           </label>
           <div className="col-sm-10">
             <input
+              autoFocus
               type="password"
               className="form-control"
               id="inputPassword"

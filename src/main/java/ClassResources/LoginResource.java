@@ -1,5 +1,6 @@
 package ClassResources;
 
+import LogIn.LoginResponse;
 import LogIn.LoginService;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -14,20 +15,12 @@ public class LoginResource {
     public Response login(PasswordRequest request) {
         String password = request.getPassword();
         LoginService loginService = new LoginService();
-        boolean passwordMatch = loginService.login(password).getPasswordMatch();
+        LoginResponse loginResponse = loginService.login(password);
 
-        if (passwordMatch) {
-            return Response.status(Response.Status.OK).entity(loginService).build();
+        if (loginResponse.getPasswordMatch()) {
+            return Response.status(Response.Status.OK).entity(loginResponse).build();
         } else {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(loginService).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(loginResponse).build();
         }
-    }
-
-    public static void main(String[] args) {
-        LoginResource loginResource = new LoginResource();
-        PasswordRequest request = new PasswordRequest();
-        request.setPassword("1234");
-        Response response = loginResource.login(request);
-        System.out.println(response.getStatus());
     }
 }

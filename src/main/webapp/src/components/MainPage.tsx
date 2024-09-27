@@ -5,7 +5,7 @@ export const MainPage = () => {
   return (
     <>
       <Logout />
-      <div>MainPage</div>
+      <div>Hauptseite</div>
     </>
   );
 };

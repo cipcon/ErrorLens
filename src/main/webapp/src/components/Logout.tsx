@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
 
 export const Logout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [changePassword, setChangePassword] = useState<string>("");
-  useEffect(() => {
-    const needToChangePassword = localStorage.getItem("changePassword");
-    if (needToChangePassword) {
-      setChangePassword(needToChangePassword);
-    }
-  }, []);
+  // Access loginResponse from location.state
+  const loginResponse = location.state || {}; // If state is null, use an empty object
 
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -20,22 +16,34 @@ export const Logout = () => {
     navigate("/login");
   };
 
-  console.log(isLoggedIn);
-  console.log(changePassword);
-  console.warn(changePassword);
+  const handlePassword = () => {
+    console.log("Navigating to change password");
+    navigate("/changePassword");
+  };
 
   return (
     <>
       {isLoggedIn === "true" ? (
-        <div>
+        <div className="nav-padding">
           <nav className="navbar navbar-expand-lg">
-            <button
-              type="button"
-              className="btn btn-primary ms-auto logout-button"
-              onClick={handleLogout}
-            >
-              Ausloggen
-            </button>
+            {/* Display changePassword message from loginResponse */}
+            <div>{loginResponse.changePassword || "need to fix"}</div>
+            <div className="ms-auto">
+              <button
+                type="button"
+                className="btn btn-primary change-password"
+                onClick={handlePassword}
+              >
+                Passwort ändern
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleLogout}
+              >
+                Ausloggen
+              </button>
+            </div>
           </nav>
           <hr className="hr" />
         </div>
