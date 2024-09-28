@@ -57,7 +57,7 @@ export const Login = () => {
 
   return (
     <>
-      <form onSubmit={handleForm} className="login-form">
+      <form onSubmit={handleForm} className="login-change-password-form">
         <h3>Login</h3>
         <div className="form-group">
           <input

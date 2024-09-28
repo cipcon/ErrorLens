@@ -2,11 +2,9 @@
   box-sizing: border-box;
 }
 
-html, main {
+html, main, header, .hintergrund{
   background-color: antiquewhite;
 }
-
-
 
 nav {
   margin: 0 1rem 0 1rem;
@@ -20,7 +18,7 @@ nav {
   margin-right: 1rem;
 }
 
-.login-form {
+.login-change-password-form {
   border: 2px solid #ccc;
   border-radius: 8px;
   padding: 30px;
@@ -40,7 +38,6 @@ nav {
 .form-group {
   margin-bottom: 20px;
 }
-
 
 .btn-login {
   width: 100%;

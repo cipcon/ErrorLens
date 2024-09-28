@@ -17,6 +17,7 @@ export const ChangePassword: React.FC = () => {
     event.preventDefault();
 
     try {
+      console.log(newPassword);
       const response = await fetch("/changePassword", {
         method: "POST",
         headers: {
@@ -47,26 +48,10 @@ export const ChangePassword: React.FC = () => {
     setNewPassword(event.target.value);
   };
 
-  const handleButton = () => {
-    navigate("/");
-  };
-
   return (
-    <>
-      <nav className="navbar navbar-expand-lg">
-        <div className="ms-auto">
-          <button
-            type="button"
-            className="btn btn-primary change-password"
-            onClick={handleButton}
-          >
-            Zur Hauptseite
-          </button>
-        </div>
-      </nav>
-      <hr className="hr" />
+    <div>
       {!passwordChanged ? (
-        <form onSubmit={handleForm} className="login-form">
+        <form onSubmit={handleForm} className="login-change-password-form">
           <h3>Password ändern</h3>
           <div className="form-group">
             <input
@@ -96,6 +81,6 @@ export const ChangePassword: React.FC = () => {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };
