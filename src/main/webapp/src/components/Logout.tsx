@@ -1,13 +1,11 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
+import { LoginResponse } from "./Login";
 
-export const Logout = () => {
+export const Logout: React.FC<LoginResponse> = (loginResponse) => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Access loginResponse from location.state
-  const loginResponse = location.state || {}; // If state is null, use an empty object
+  const [alertVisibility, setAlertVisibility] = useState<boolean>(true);
 
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -26,8 +24,18 @@ export const Logout = () => {
       {isLoggedIn === "true" ? (
         <div className="nav-padding">
           <nav className="navbar navbar-expand-lg">
-            {/* Display changePassword message from loginResponse */}
-            <div>{loginResponse.changePassword || "need to fix"}</div>
+            {loginResponse.passwordMatch && alertVisibility && (
+              <>
+                <div>{loginResponse.changePassword}</div>
+                <button
+                  className="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                  onClick={() => setAlertVisibility(false)}
+                ></button>
+              </>
+            )}
+
             <div className="ms-auto">
               <button
                 type="button"

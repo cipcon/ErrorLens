@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import org.mindrot.jbcrypt.BCrypt;
 
 import DBConnection.DBConnection;
+import Requests.LoginResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
 // was passiert, wenn man das Passwort vergisst?

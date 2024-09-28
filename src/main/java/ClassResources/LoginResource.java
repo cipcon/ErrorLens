@@ -1,7 +1,8 @@
 package ClassResources;
 
-import LogIn.LoginResponse;
 import LogIn.LoginService;
+import Requests.LoginResponse;
+import Requests.PasswordRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;

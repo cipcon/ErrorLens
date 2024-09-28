@@ -6,11 +6,12 @@ import java.sql.PreparedStatement;
 import org.mindrot.jbcrypt.BCrypt;
 
 import DBConnection.DBConnection;
+import Requests.LoginResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ChangePassword {
-    public String changePassword(String password) {
+    public LoginResponse changePassword(String password) {
         LoginService logIn = new LoginService();
         boolean oldPass = logIn.login(password).getPasswordMatch();
 
@@ -25,17 +26,16 @@ public class ChangePassword {
                 statement.setDate(2, sqlDate);
                 int rowsAffected = statement.executeUpdate();
                 if (rowsAffected > 0) {
-                    return "Password changed successfully";
+                    return new LoginResponse("Passwort wurde erfolgreich geändert.", false);
+                } else {
+                    return new LoginResponse("Etwas ist schief gelaufen.", false);
                 }
             } catch (Exception e) {
-                return e.getMessage();
+                return new LoginResponse(e.getMessage(), false);
             }
         }
-        return "?";
+        return new LoginResponse("Sie haben das gleiche Passwort eingegeben. Bitte wählen Sie ein neues Passwort.",
+                true);
     }
 
-    public static void main(String[] args) {
-        ChangePassword change = new ChangePassword();
-        System.out.println(change.changePassword("1234"));
-    }
 }

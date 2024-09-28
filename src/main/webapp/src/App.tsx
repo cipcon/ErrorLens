@@ -1,22 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Login } from "./components/Login";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { MainPage } from "./components/MainPage";
 import { ChangePassword } from "./components/ChangePassword";
 
 const App: React.FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-    if (isLoggedIn === "true") {
-      navigate("/");
-    } else {
-      navigate("/login");
-    }
-  }, [navigate]);
-
   return (
     <>
       <main>

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface LoginResponse {
+export interface LoginResponse {
   message: string;
   passwordMatch: boolean;
   changePassword: string;
@@ -24,11 +24,6 @@ export const Login = () => {
   const handleForm = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (!password) {
-      setLoginError("Bitte fügen Sie das Passwort hinzu");
-      return;
-    }
-
     try {
       const response = await fetch("/login", {
         method: "POST",
@@ -45,9 +40,8 @@ export const Login = () => {
         // Mark the user as logged in
         localStorage.setItem("isLoggedIn", "true");
 
-        // Wait until loginResponse is fully updated before navigating
-        console.log(data.changePassword);
-        navigate("/", { state: data }); // Pass the full loginResponse object
+        // Navigate with the data
+        navigate("/", { state: { loginResponse: data } });
       } else {
         setLoginError(
           "Authentifizierung fehlgeschlagen. Bitte überprüfen Sie das Passwort."
@@ -63,27 +57,29 @@ export const Login = () => {
 
   return (
     <>
-      <form onSubmit={handleForm}>
-        <div className="row mb-3"></div>
-        <div className="row mb-3">
-          <label htmlFor="inputPassword" className="col-sm-2 col-form-label">
-            Password
-          </label>
-          <div className="col-sm-10">
-            <input
-              autoFocus
-              type="password"
-              className="form-control"
-              id="inputPassword"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-          </div>
+      <form onSubmit={handleForm} className="login-form">
+        <h3>Login</h3>
+        <div className="form-group">
+          <input
+            autoFocus
+            type="password"
+            className="form-control"
+            id="inputPassword"
+            placeholder="Passwort"
+            value={password}
+            onChange={handlePasswordChange}
+            required
+            style={{ borderColor: "black" }}
+          />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Sign in
+        <button type="submit" className="btn btn-primary btn-login">
+          Anmelden
         </button>
-        <p>{loginResponse.message ? loginResponse.message : loginError}</p>
+        {(loginResponse.message || loginError) && (
+          <div className="message">
+            <p>{loginResponse.message || loginError}</p>
+          </div>
+        )}
       </form>
     </>
   );
