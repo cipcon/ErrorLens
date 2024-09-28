@@ -6,10 +6,6 @@ import java.sql.SQLException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-//////////////
-// DE STERS FISIERUL
-//////////////
-
 public class CreatePassword {
     public static int addPassword(String password) {
         String message;

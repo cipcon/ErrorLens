@@ -53,6 +53,18 @@ export const ChangePassword: React.FC = () => {
 
   return (
     <>
+      <nav className="navbar navbar-expand-lg">
+        <div className="ms-auto">
+          <button
+            type="button"
+            className="btn btn-primary change-password"
+            onClick={handleButton}
+          >
+            Zur Hauptseite
+          </button>
+        </div>
+      </nav>
+      <hr className="hr" />
       {!passwordChanged ? (
         <form onSubmit={handleForm} className="login-form">
           <h3>Password ändern</h3>
@@ -80,13 +92,6 @@ export const ChangePassword: React.FC = () => {
           {changePasswordResponse && (
             <div className="message">
               <p>{changePasswordResponse.message}</p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleButton}
-              >
-                Zur Hauptseite
-              </button>
             </div>
           )}
         </div>
