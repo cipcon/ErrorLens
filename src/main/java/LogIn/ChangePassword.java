@@ -13,9 +13,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ChangePassword {
     public LoginResponse changePassword(String password) {
         LoginService logIn = new LoginService();
-        boolean oldPass = logIn.login(password).getPasswordMatch();
+        boolean samePassword = logIn.login(password).getPasswordMatch();
+        System.out.println(samePassword);
 
-        if (!oldPass) {
+        if (!samePassword) {
             try (Connection connection = DBConnection.connectToDB()) {
                 String changePass = "UPDATE passwort SET passwort = ?, datum_geandert = ?";
                 java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
@@ -35,7 +36,12 @@ public class ChangePassword {
             }
         }
         return new LoginResponse("Sie haben das gleiche Passwort eingegeben. Bitte wählen Sie ein neues Passwort.",
-                true);
+                samePassword);
     }
 
+    public static void main(String[] args) {
+        ChangePassword changePassword = new ChangePassword();
+        LoginResponse loginResponse = changePassword.changePassword("1234");
+        System.out.println(loginResponse.getPasswordMatch());
+    }
 }

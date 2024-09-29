@@ -1,5 +1,6 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ChangePasswordResponse } from "./ChangePassword";
 
 export interface LoginResponse {
   message: string;
@@ -14,8 +15,19 @@ export const Login = () => {
     passwordMatch: false,
     changePassword: "",
   });
+  const [changePasswordResponse, setChangePasswordResponse] =
+    useState<ChangePasswordResponse>({ message: "", passwordMatch: false });
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const stateLoginResponse = location.state?.changePasswordResponse;
+    if (stateLoginResponse) {
+      setChangePasswordResponse(stateLoginResponse);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
@@ -56,8 +68,16 @@ export const Login = () => {
   };
 
   return (
-    <>
+    <div className="container">
       <form onSubmit={handleForm} className="login-change-password-form">
+        {changePasswordResponse.message && (
+          <div>
+            {changePasswordResponse.message}
+            <br />
+            Bitte loggen Sie sich erneut ein
+          </div>
+        )}
+
         <h3>Login</h3>
         <div className="form-group">
           <input
@@ -81,6 +101,6 @@ export const Login = () => {
           </div>
         )}
       </form>
-    </>
+    </div>
   );
 };

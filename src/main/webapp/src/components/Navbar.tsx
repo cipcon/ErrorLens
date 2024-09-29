@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { LoginResponse } from "./Login";
@@ -8,7 +8,11 @@ export const Navbar: React.FC<LoginResponse> = ({
   passwordMatch,
 }) => {
   const navigate = useNavigate();
-  const [alertVisibility, setAlertVisibility] = useState<boolean>(true);
+  const [alertVisibility, setAlertVisibility] = useState<boolean>(false);
+
+  useEffect(() => {
+    setAlertVisibility(passwordMatch);
+  }, [passwordMatch]);
 
   const isLoggedIn = localStorage.getItem("isLoggedIn");
 
@@ -34,7 +38,7 @@ export const Navbar: React.FC<LoginResponse> = ({
       {isLoggedIn === "true" ? (
         <div className="nav-padding">
           <nav className="navbar navbar-expand-lg">
-            {passwordMatch && alertVisibility && (
+            {changePassword && alertVisibility && (
               <>
                 <div>{changePassword}</div>
                 <button

@@ -37,8 +37,17 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/logEntries" element={<LogEntries />} />
-
-          <Route path="*" element={<h1>Sie sind außerhalb der Seite</h1>} />
+          <Route
+            path="*"
+            element={
+              <div className="outside">
+                <h1>Sie sind außerhalb der Seite</h1>
+                <a className="btn btn-primary" href="/login">
+                  Zum Einloggen
+                </a>
+              </div>
+            }
+          />
         </Routes>
       </main>
     </div>

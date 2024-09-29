@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+.btn-close {
+  margin-left: 10px;
+}
+
 html, main, header, .hintergrund{
   background-color: antiquewhite;
 }
@@ -18,21 +22,35 @@ nav {
   margin-right: 1rem;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.container-change {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
 .login-change-password-form {
+  text-align: center;
   border: 2px solid #ccc;
   border-radius: 8px;
   padding: 30px;
-  margin: 10% auto;
   min-width: 400px;
   max-width: 400px;
   background-color: #f9f9f9;
   box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.login-form h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+.login-change-password-form h3 {
+  margin: 20px 0 20px 0;
 }
 
 .form-group {
@@ -52,4 +70,12 @@ nav {
 .password-change-message {
   text-align: center;
   margin-top: 20px;
+}
+
+.outside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
