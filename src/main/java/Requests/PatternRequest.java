@@ -7,6 +7,7 @@ public class PatternRequest {
     private String pattern;
     private String patternDescription;
     private String severity;
+    private int rank;
 
     public PatternRequest(int patternId, String patternName, String pattern, String patternDescription,
             String severity) {
@@ -22,6 +23,16 @@ public class PatternRequest {
         this.pattern = pattern;
         this.patternDescription = patternDescription;
         this.severity = severity;
+    }
+
+    public PatternRequest(int patternId, String patternName, String pattern, String patternDescription,
+            String severity, int rank) {
+        this.patternId = patternId;
+        this.patternName = patternName;
+        this.pattern = pattern;
+        this.patternDescription = patternDescription;
+        this.severity = severity;
+        this.rank = rank;
     }
 
     public int getPatternId() {
@@ -62,6 +73,14 @@ public class PatternRequest {
 
     public void setSeverity(String severity) {
         this.severity = severity;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
 }
