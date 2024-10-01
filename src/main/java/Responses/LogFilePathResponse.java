@@ -1,4 +1,4 @@
-package Requests;
+package Responses;
 
 public class LogFilePathResponse {
     private boolean exist;

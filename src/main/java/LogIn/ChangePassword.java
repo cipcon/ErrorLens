@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import org.mindrot.jbcrypt.BCrypt;
 
 import DBConnection.DBConnection;
-import Requests.LoginResponse;
+import Responses.LoginResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped

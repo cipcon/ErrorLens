@@ -3,26 +3,31 @@ package LogFiles;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import DBConnection.DBConnection;
-import Requests.AddLogFileResponse;
-import Requests.LogFilePathResponse;
+import Requests.AddLogFileRequest;
+import Responses.LogFileAddedResponse;
+import Responses.LogFilePathResponse;
 
 public class LogFile {
-    public String addLogFile(AddLogFileResponse addLogFileResponse) {
+
+    // Add a log file to the database
+    public LogFileAddedResponse addLogFile(AddLogFileRequest addLogFileResponse) {
         String message = "";
+        boolean logFileAdded = false;
         boolean logFileNameExists = LogFileNameExists(addLogFileResponse.getLogFileName());
         LogFilePathResponse logFilePath = LogFilePathExists(addLogFileResponse.getLogFilePath());
 
         if (logFileNameExists) {
             message = "Der Name der Logdatei ist bereits vorhanden. Bitte wählen Sie einen anderen Namen";
-            return message;
+            return new LogFileAddedResponse(message, logFileAdded);
         }
 
         if (logFilePath.isExist()) {
             message = "Die Logdatei befindet sich schon in der Liste. Der Name der Datei ist: "
                     + logFilePath.getlogFileName();
-            return message;
+            return new LogFileAddedResponse(message, logFileAdded);
         }
 
         try (Connection connection = DBConnection.connectToDB()) {
@@ -36,7 +41,8 @@ public class LogFile {
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 message = "Logdatei wurde erfolgreich hinzugefügt";
-                return message;
+                logFileAdded = true;
+                return new LogFileAddedResponse(message, logFileAdded);
             } else {
                 message = "";
             }
@@ -44,9 +50,36 @@ public class LogFile {
         } catch (Exception e) {
             message = e.getMessage();
         }
-        return message;
+        return new LogFileAddedResponse(message, logFileAdded);
     }
 
+    // Return an ArrayList with the name and the path of the logfile and the last
+    // time it was aktualised(This represents also last time the logfile was
+    // filtered).
+    public static ArrayList<AddLogFileRequest> listLogFiles() {
+        ArrayList<AddLogFileRequest> allLogFiles = new ArrayList<>();
+        String listFromLogFiles = "SELECT logfile_id, logfile_name, logfile_pfad, geaendert_am FROM logfile";
+
+        try (Connection connection = DBConnection.connectToDB()) {
+            PreparedStatement statement = connection.prepareStatement(listFromLogFiles);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int logFileID = resultSet.getInt("logfile_id");
+                String logFileName = resultSet.getString("logfile_name");
+                String logFilePath = resultSet.getString("logfile_pfad");
+                java.sql.Date changed = resultSet.getDate("geaendert_am");
+                AddLogFileRequest addLogFileRequest = new AddLogFileRequest(logFileID, logFileName, logFilePath,
+                        changed);
+                allLogFiles.add(addLogFileRequest);
+            }
+            return allLogFiles;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allLogFiles;
+    }
+
+    // Check if a log file name exists in the database
     public static boolean LogFileNameExists(String logFileName) {
         boolean exist = false;
         try (Connection connection = DBConnection.connectToDB()) {
@@ -83,10 +116,25 @@ public class LogFile {
         return new LogFilePathResponse(exist, logFileName);
     }
 
+    // Test the addLogFile method
     public static void main(String[] args) {
-        System.out.println(LogFile.LogFileNameExists("Nziua"));
-        LogFilePathResponse logFilePathResponse = LogFilePathExists("12345");
-        System.out.println(logFilePathResponse.isExist());
-        System.out.println(logFilePathResponse.getlogFileName());
+        /*
+         * LogFile logFile = new LogFile();
+         * 
+         * java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+         * AddLogFileRequest addLogFileResponse = new AddLogFileRequest("Banica",
+         * "Junior", today, today, 69);
+         * 
+         * LogFileAddedResponse logFileAddedResponse =
+         * logFile.addLogFile(addLogFileResponse);
+         * 
+         * System.out.println(logFileAddedResponse.getMessage());
+         * System.out.println(logFileAddedResponse.isLogFileAdded());
+         */
+
+        ArrayList<AddLogFileRequest> listLogFiles = LogFile.listLogFiles();
+        for (AddLogFileRequest logFile : listLogFiles) {
+            System.out.println(logFile.getLogFileName());
+        }
     }
 }

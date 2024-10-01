@@ -1,4 +1,4 @@
-package Requests;
+package Responses;
 
 public class LoginResponse {
     private String message;

@@ -79,3 +79,11 @@ nav {
   justify-content: center;
   height: 100vh;
 }
+
+.form-logfile {
+  max-width: 500px;
+}
+
+.form-logfile label, .form-logfile .btn-primary {
+  margin-top: 10px;
+}

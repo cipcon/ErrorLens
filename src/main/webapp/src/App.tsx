@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Login, LoginResponse } from "./components/Login";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { ChangePassword } from "./components/ChangePassword";
-import { LogEntries } from "./components/LogEntries";
+import { LogEntries } from "./components/LogFiles/LogEntries";
 import { Navbar } from "./components/Navbar";
 import { MainPage } from "./components/MainPage";
 import "./App.css";
+import { LogFile } from "./components/LogFiles/LogFile";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/logEntries" element={<LogEntries />} />
+          <Route path="/logFile" element={<LogFile />} />
           <Route
             path="*"
             element={
