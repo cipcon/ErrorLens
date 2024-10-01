@@ -2,7 +2,7 @@ package Requests;
 
 import java.util.Date;
 
-public class AddLogFileRequest {
+public class LogFileRequest {
     private int logFileID;
     private String logFileName;
     private String logFilePath;
@@ -10,7 +10,7 @@ public class AddLogFileRequest {
     private java.sql.Date changed;
     private int lastRow;
 
-    public AddLogFileRequest(String logFileName, String logFilePath, java.sql.Date created, java.sql.Date changed,
+    public LogFileRequest(String logFileName, String logFilePath, java.sql.Date created, java.sql.Date changed,
             int lastRow) {
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
@@ -19,11 +19,17 @@ public class AddLogFileRequest {
         this.lastRow = lastRow;
     }
 
-    public AddLogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Date changed) {
+    public LogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Date changed) {
         this.logFileID = logFileID;
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
         this.changed = changed;
+    }
+
+    public LogFileRequest(int logFileID, String logFileName, String logFilePath) {
+        this.logFileID = logFileID;
+        this.logFileName = logFileName;
+        this.logFilePath = logFilePath;
     }
 
     public int getLogFileID() {

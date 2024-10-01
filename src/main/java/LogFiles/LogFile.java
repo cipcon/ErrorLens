@@ -6,14 +6,14 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import DBConnection.DBConnection;
-import Requests.AddLogFileRequest;
-import Responses.LogFileAddedResponse;
+import Requests.LogFileRequest;
+import Responses.MessageChangeResponse;
 import Responses.LogFilePathResponse;
 
 public class LogFile {
 
     // Add a log file to the database
-    public LogFileAddedResponse addLogFile(AddLogFileRequest addLogFileResponse) {
+    public MessageChangeResponse addLogFile(LogFileRequest addLogFileResponse) {
         String message = "";
         boolean logFileAdded = false;
         boolean logFileNameExists = LogFileNameExists(addLogFileResponse.getLogFileName());
@@ -21,13 +21,13 @@ public class LogFile {
 
         if (logFileNameExists) {
             message = "Der Name der Logdatei ist bereits vorhanden. Bitte wählen Sie einen anderen Namen";
-            return new LogFileAddedResponse(message, logFileAdded);
+            return new MessageChangeResponse(message, logFileAdded);
         }
 
         if (logFilePath.isExist()) {
             message = "Die Logdatei befindet sich schon in der Liste. Der Name der Datei ist: "
                     + logFilePath.getlogFileName();
-            return new LogFileAddedResponse(message, logFileAdded);
+            return new MessageChangeResponse(message, logFileAdded);
         }
 
         try (Connection connection = DBConnection.connectToDB()) {
@@ -42,7 +42,7 @@ public class LogFile {
             if (rowsAffected > 0) {
                 message = "Logdatei wurde erfolgreich hinzugefügt";
                 logFileAdded = true;
-                return new LogFileAddedResponse(message, logFileAdded);
+                return new MessageChangeResponse(message, logFileAdded);
             } else {
                 message = "";
             }
@@ -50,14 +50,14 @@ public class LogFile {
         } catch (Exception e) {
             message = e.getMessage();
         }
-        return new LogFileAddedResponse(message, logFileAdded);
+        return new MessageChangeResponse(message, logFileAdded);
     }
 
     // Return an ArrayList with the name and the path of the logfile and the last
     // time it was aktualised(This represents also last time the logfile was
     // filtered).
-    public static ArrayList<AddLogFileRequest> listLogFiles() {
-        ArrayList<AddLogFileRequest> allLogFiles = new ArrayList<>();
+    public static ArrayList<LogFileRequest> listLogFiles() {
+        ArrayList<LogFileRequest> allLogFiles = new ArrayList<>();
         String listFromLogFiles = "SELECT logfile_id, logfile_name, logfile_pfad, geaendert_am FROM logfile";
 
         try (Connection connection = DBConnection.connectToDB()) {
@@ -68,7 +68,7 @@ public class LogFile {
                 String logFileName = resultSet.getString("logfile_name");
                 String logFilePath = resultSet.getString("logfile_pfad");
                 java.sql.Date changed = resultSet.getDate("geaendert_am");
-                AddLogFileRequest addLogFileRequest = new AddLogFileRequest(logFileID, logFileName, logFilePath,
+                LogFileRequest addLogFileRequest = new LogFileRequest(logFileID, logFileName, logFilePath,
                         changed);
                 allLogFiles.add(addLogFileRequest);
             }
@@ -77,6 +77,62 @@ public class LogFile {
             e.printStackTrace();
         }
         return allLogFiles;
+    }
+
+    // Update the name and the path of a log file
+    public MessageChangeResponse updateLogFile(LogFileRequest updateLogFIleRequest) {
+        String message = "";
+        boolean logFileUpdated = false;
+        if (LogFileNameExists(updateLogFIleRequest.getLogFileName())) {
+            message = "Der Name der Logdatei ist bereits vorhanden. Bitte wählen Sie einen anderen Namen";
+            return new MessageChangeResponse(message, logFileUpdated);
+        }
+
+        if (LogFilePathExists(updateLogFIleRequest.getLogFilePath()).isExist()) {
+            message = "Die Logdatei befindet sich schon in der Liste. Der Name der Datei ist: "
+                    + LogFilePathExists(updateLogFIleRequest.getLogFilePath()).getlogFileName();
+            return new MessageChangeResponse(message, logFileUpdated);
+        }
+
+        try (Connection connection = DBConnection.connectToDB()) {
+            String updateLogFileName = "UPDATE logfile SET logfile_name = ?, logfile_pfad = ? WHERE logfile_id = ?";
+            PreparedStatement statement = connection.prepareStatement(updateLogFileName);
+            statement.setString(1, updateLogFIleRequest.getLogFileName());
+            statement.setString(2, updateLogFIleRequest.getLogFilePath());
+            statement.setInt(3, updateLogFIleRequest.getLogFileID());
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                message = "Logdatei wurde erfolgreich aktualisiert";
+                logFileUpdated = true;
+                return new MessageChangeResponse(message, logFileUpdated);
+            } else {
+                message = "";
+            }
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+        return new MessageChangeResponse(message, logFileUpdated);
+    }
+
+    public MessageChangeResponse deleteLogFile(int logFileID) {
+        String message = "";
+        boolean logFileDeleted = false;
+        try (Connection connection = DBConnection.connectToDB()) {
+            String deleteLogFile = "DELETE FROM logfile WHERE logfile_id = ?";
+            PreparedStatement statement = connection.prepareStatement(deleteLogFile);
+            statement.setInt(1, logFileID);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                message = "Logdatei wurde erfolgreich gelöscht";
+                logFileDeleted = true;
+                return new MessageChangeResponse(message, logFileDeleted);
+            } else {
+                message = "";
+            }
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+        return new MessageChangeResponse(message, logFileDeleted);
     }
 
     // Check if a log file name exists in the database
@@ -118,23 +174,9 @@ public class LogFile {
 
     // Test the addLogFile method
     public static void main(String[] args) {
-        /*
-         * LogFile logFile = new LogFile();
-         * 
-         * java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
-         * AddLogFileRequest addLogFileResponse = new AddLogFileRequest("Banica",
-         * "Junior", today, today, 69);
-         * 
-         * LogFileAddedResponse logFileAddedResponse =
-         * logFile.addLogFile(addLogFileResponse);
-         * 
-         * System.out.println(logFileAddedResponse.getMessage());
-         * System.out.println(logFileAddedResponse.isLogFileAdded());
-         */
-
-        ArrayList<AddLogFileRequest> listLogFiles = LogFile.listLogFiles();
-        for (AddLogFileRequest logFile : listLogFiles) {
-            System.out.println(logFile.getLogFileName());
-        }
+        LogFile logFile = new LogFile();
+        MessageChangeResponse logFileResponse = logFile.deleteLogFile(6);
+        System.out.println(logFileResponse.getMessage());
+        System.out.println(logFileResponse.isChanged());
     }
 }

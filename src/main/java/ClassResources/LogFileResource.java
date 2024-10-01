@@ -3,8 +3,8 @@ package ClassResources;
 import org.jboss.logging.Logger;
 
 import LogFiles.LogFile;
-import Requests.AddLogFileRequest;
-import Responses.LogFileAddedResponse;
+import Requests.LogFileRequest;
+import Responses.MessageChangeResponse;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -20,19 +20,18 @@ public class LogFileResource {
     @Path("/addLogFile")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addLogFilePath(AddLogFileRequest addLogFileResponse) {
+    public Response addLogFilePath(LogFileRequest addLogFileResponse) {
         LOG.info("Received object from MainPage.tsx: " + addLogFileResponse.getLogFileName());
 
         LogFile logFile = new LogFile();
 
-        LogFileAddedResponse logFileAddedResponse = logFile.addLogFile(addLogFileResponse);
-
-        if (logFileAddedResponse.isLogFileAdded()) {
+        try {
+            MessageChangeResponse logFileAddedResponse = logFile.addLogFile(addLogFileResponse);
             return Response.status(Response.Status.OK).entity(logFileAddedResponse).build();
-        } else {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(logFileAddedResponse).build();
+        } catch (Exception e) {
+            LOG.error("Error adding log file: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-
     }
 
     @Path("/listLogFiles")
@@ -47,4 +46,31 @@ public class LogFileResource {
         }
     }
 
+    @Path("/updateLogFile")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateLogFile(LogFileRequest logFileRequest) {
+        LogFile logFile = new LogFile();
+        try {
+            MessageChangeResponse logFileResponse = logFile.updateLogFile(logFileRequest);
+            return Response.status(Response.Status.OK).entity(logFileResponse).build();
+        } catch (Exception e) {
+            LOG.error("Error updating log file: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @Path("/deleteLogFile")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteLogFile(int logFileId) {
+        LogFile logFile = new LogFile();
+        try {
+            MessageChangeResponse logFileResponse = logFile.deleteLogFile(logFileId);
+            return Response.status(Response.Status.OK).entity(logFileResponse).build();
+        } catch (Exception e) {
+            LOG.error("Error deleting log file: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
 }
