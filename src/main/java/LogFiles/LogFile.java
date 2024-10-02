@@ -80,26 +80,20 @@ public class LogFile {
     }
 
     // Update the name and the path of a log file
-    public MessageChangeResponse updateLogFile(LogFileRequest updateLogFIleRequest) {
+    public MessageChangeResponse updateLogFile(LogFileRequest updateLogFileRequest) {
         String message = "";
         boolean logFileUpdated = false;
-        if (LogFileNameExists(updateLogFIleRequest.getLogFileName())) {
+        if (LogFileNameExists(updateLogFileRequest.getLogFileName())) {
             message = "Der Name der Logdatei ist bereits vorhanden. Bitte wählen Sie einen anderen Namen";
-            return new MessageChangeResponse(message, logFileUpdated);
-        }
-
-        if (LogFilePathExists(updateLogFIleRequest.getLogFilePath()).isExist()) {
-            message = "Die Logdatei befindet sich schon in der Liste. Der Name der Datei ist: "
-                    + LogFilePathExists(updateLogFIleRequest.getLogFilePath()).getlogFileName();
             return new MessageChangeResponse(message, logFileUpdated);
         }
 
         try (Connection connection = DBConnection.connectToDB()) {
             String updateLogFileName = "UPDATE logfile SET logfile_name = ?, logfile_pfad = ? WHERE logfile_id = ?";
             PreparedStatement statement = connection.prepareStatement(updateLogFileName);
-            statement.setString(1, updateLogFIleRequest.getLogFileName());
-            statement.setString(2, updateLogFIleRequest.getLogFilePath());
-            statement.setInt(3, updateLogFIleRequest.getLogFileID());
+            statement.setString(1, updateLogFileRequest.getLogFileName());
+            statement.setString(2, updateLogFileRequest.getLogFilePath());
+            statement.setInt(3, updateLogFileRequest.getLogFileID());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 message = "Logdatei wurde erfolgreich aktualisiert";

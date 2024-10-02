@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Login, LoginResponse } from "./components/Login";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { ChangePassword } from "./components/ChangePassword";
-import { LogEntries } from "./components/LogFiles/LogEntries";
 import { Navbar } from "./components/Navbar";
 import { MainPage } from "./components/MainPage";
 import "./App.css";
 import { LogFile } from "./components/LogFiles/LogFile";
+import { LogEntries } from "./components/LogEntries/LogEntries";
 
 const App: React.FC = () => {
   const location = useLocation();

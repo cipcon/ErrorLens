@@ -95,8 +95,8 @@ public class LogFilePatternResource {
     }
 
     public static void main(String[] args) {
-        LogFilePatternResource logFilePatternResource = new LogFilePatternResource();
         /*
+         * LogFilePatternResource logFilePatternResource = new LogFilePatternResource();
          * ArrayList<PatternRequest> patterns = new ArrayList<>();
          * patterns.add(new PatternRequest(2, 1));
          * patterns.add(new PatternRequest(3, 2));
