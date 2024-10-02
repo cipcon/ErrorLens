@@ -172,11 +172,4 @@ public class LogFile {
         return new LogFilePathResponse(exist, logFileName);
     }
 
-    // Test the addLogFile method
-    public static void main(String[] args) {
-        LogFile logFile = new LogFile();
-        MessageChangeResponse logFileResponse = logFile.deleteLogFile(6);
-        System.out.println(logFileResponse.getMessage());
-        System.out.println(logFileResponse.isChanged());
-    }
 }

@@ -35,6 +35,11 @@ public class PatternRequest {
         this.rank = rank;
     }
 
+    public PatternRequest(int patternId, int rank) {
+        this.patternId = patternId;
+        this.rank = rank;
+    }
+
     public int getPatternId() {
         return patternId;
     }

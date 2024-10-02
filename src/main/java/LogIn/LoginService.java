@@ -13,7 +13,6 @@ import DBConnection.DBConnection;
 import Responses.LoginResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
-// was passiert, wenn man das Passwort vergisst?
 @ApplicationScoped
 public class LoginService {
     public LoginResponse login(String password) {
@@ -64,8 +63,8 @@ public class LoginService {
 
     public static void main(String[] args) {
         LoginService logIn = new LoginService();
-        System.out.println(logIn.login("1234").getChangePassword());
-        System.out.println(logIn.login("1234").getMessage());
-        System.out.println(logIn.login("1234").getPasswordMatch());
+        System.out.println(logIn.login("Matei").getChangePassword());
+        System.out.println(logIn.login("Matei").getMessage());
+        System.out.println(logIn.login("Matei").getPasswordMatch());
     }
 }

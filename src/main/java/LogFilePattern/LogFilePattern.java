@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import DBConnection.DBConnection;
 import Requests.PatternLogFileRequest;
@@ -71,25 +70,33 @@ public class LogFilePattern {
     public MessageChangeResponse updatePatternRanks(UpdatePatternsRanksRequest updatePatternsRanksRequest) {
         String message = "";
         boolean changed = false;
+        int patternsSize = updatePatternsRanksRequest.getPatterns().size();
+        int totalRowsAffected = 0;
+
         try (Connection connection = DBConnection.connectToDB()) {
             connection.setAutoCommit(false);
             String updateRank = "UPDATE logfile_pattern SET reihenfolge_platz_pattern = ? WHERE logfile_id = ? AND pattern_id = ?";
-            PreparedStatement statement = connection.prepareStatement(updateRank);
-            for (PatternRequest rank : updatePatternsRanksRequest.getPatterns()) {
-                statement.setInt(1, rank.getRank());
-                statement.setInt(2, updatePatternsRanksRequest.getLogFileID());
-                statement.setInt(3, rank.getPatternId());
-                statement.addBatch();
+            try (PreparedStatement statement = connection.prepareStatement(updateRank)) {
+                for (PatternRequest pattern : updatePatternsRanksRequest.getPatterns()) {
+                    statement.setInt(1, pattern.getRank());
+                    statement.setInt(2, updatePatternsRanksRequest.getLogFileID());
+                    statement.setInt(3, pattern.getPatternId());
+                    totalRowsAffected += statement.executeUpdate();
+                }
             }
-            int[] rowsAffected = statement.executeBatch();
-            connection.commit();
-            changed = Arrays.stream(rowsAffected).sum() > 0;
-            if (!changed) {
+
+            if (totalRowsAffected == patternsSize) {
+                connection.commit();
+                message = "Reihenfolge der Patterns erfolgreich aktualisiert";
+                changed = true;
+            } else {
+                connection.rollback();
                 message = "Fehler beim Aktualisieren der Reihenfolge der Patterns im Logfile";
             }
         } catch (SQLException e) {
-            message = e.getMessage();
+            message = "Datenbankfehler: " + e.getMessage();
         }
+
         return new MessageChangeResponse(message, changed);
     }
 

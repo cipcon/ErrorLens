@@ -16,21 +16,25 @@ export const ChangePassword: React.FC = () => {
     event.preventDefault();
 
     try {
-      console.log(newPassword);
       const response = await fetch("/changePassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify(newPassword), // Send the password as a plain string
       });
 
       const data: ChangePasswordResponse = await response.json();
-      console.log(response);
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+      console.log(newPassword);
+
       if (response.ok) {
         setChangePasswordResponse(data);
-        localStorage.removeItem("isLoggedIn");
-        navigate("/login", { state: { changePasswordResponse: data } });
+        if (!data.passwordMatch) {
+          localStorage.removeItem("isLoggedIn");
+          navigate("/login", { state: { changePasswordResponse: data } });
+        }
       } else {
         setChangePasswordResponse(data);
       }
@@ -45,6 +49,7 @@ export const ChangePassword: React.FC = () => {
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     setNewPassword(event.target.value);
   };
 

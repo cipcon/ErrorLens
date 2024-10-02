@@ -11,37 +11,38 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ChangePassword {
-    public LoginResponse changePassword(String password) {
+    public LoginResponse changePassword(String newPassword) {
         LoginService logIn = new LoginService();
-        boolean samePassword = logIn.login(password).getPasswordMatch();
-        System.out.println(samePassword);
+        LoginResponse loginResponse = logIn.login(newPassword);
 
-        if (!samePassword) {
-            try (Connection connection = DBConnection.connectToDB()) {
-                String changePass = "UPDATE passwort SET passwort = ?, datum_geandert = ?";
-                java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
-                String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-
-                PreparedStatement statement = connection.prepareStatement(changePass);
-                statement.setString(1, hashedPassword);
-                statement.setDate(2, sqlDate);
-                int rowsAffected = statement.executeUpdate();
-                if (rowsAffected > 0) {
-                    return new LoginResponse("Passwort wurde erfolgreich geändert.", false);
-                } else {
-                    return new LoginResponse("Etwas ist schief gelaufen.", false);
-                }
-            } catch (Exception e) {
-                return new LoginResponse(e.getMessage(), false);
-            }
+        if (loginResponse.getPasswordMatch()) {
+            return new LoginResponse("Sie haben das gleiche Passwort eingegeben. Bitte wählen Sie ein neues Passwort.",
+                    true);
         }
-        return new LoginResponse("Sie haben das gleiche Passwort eingegeben. Bitte wählen Sie ein neues Passwort.",
-                samePassword);
+
+        try (Connection connection = DBConnection.connectToDB()) {
+            String changePass = "UPDATE passwort SET passwort = ?, datum_geandert = ?";
+            java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
+            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
+            PreparedStatement statement = connection.prepareStatement(changePass);
+            statement.setString(1, hashedPassword);
+            statement.setDate(2, sqlDate);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                return new LoginResponse("Passwort wurde erfolgreich geändert.", false);
+            } else {
+                return new LoginResponse("Etwas ist schief gelaufen.", false);
+            }
+        } catch (Exception e) {
+            return new LoginResponse(e.getMessage(), false);
+        }
     }
 
     public static void main(String[] args) {
         ChangePassword changePassword = new ChangePassword();
         LoginResponse loginResponse = changePassword.changePassword("1234");
+        System.out.println(loginResponse.getMessage());
         System.out.println(loginResponse.getPasswordMatch());
     }
 }

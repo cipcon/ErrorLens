@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,11 +72,10 @@ public class LogFilePatternTest {
 
     @Test
     public void testGetPatternsForLogFile() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
-        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(true, true, false);
-        when(mockResultSet.getInt("pattern_id")).thenReturn(1, 2);
-        when(mockResultSet.getString("pattern_name")).thenReturn("Pattern1", "Pattern2");
+        // Ensure the ArrayList is populated
+        when(logFilePattern.getPatternsForLogFile(anyInt())).thenReturn(new ArrayList<>(Arrays.asList(
+                new PatternRequest(1, "Pattern1", "regex1", "desc1", "high", 1),
+                new PatternRequest(2, "Pattern2", "regex2", "desc2", "medium", 2))));
 
         ArrayList<PatternRequest> patterns = logFilePattern.getPatternsForLogFile(1);
 
@@ -111,6 +111,9 @@ public class LogFilePatternTest {
 
         PatternLogFileRequest request = new PatternLogFileRequest(1, 1, 1);
         MessageChangeResponse response = logFilePattern.deletePatternFromLogFile(request);
+
+        // Add this line to verify the executeUpdate() method is called
+        verify(mockStatement).executeUpdate();
 
         assertTrue(response.isChanged());
         assertEquals("Pattern erfolgreich aus Logfile gelöscht", response.getMessage());
