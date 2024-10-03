@@ -33,6 +33,10 @@ export const Navbar: React.FC<LoginResponse> = ({
     navigate("/");
   };
 
+  const handlePatterns = () => {
+    navigate("/patterns");
+  };
+
   return (
     <>
       {isLoggedIn === "true" ? (
@@ -64,6 +68,13 @@ export const Navbar: React.FC<LoginResponse> = ({
                 onClick={handleLogs}
               >
                 Logeinträge
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary change-password"
+                onClick={handlePatterns}
+              >
+                Patterns
               </button>
               <button
                 type="button"

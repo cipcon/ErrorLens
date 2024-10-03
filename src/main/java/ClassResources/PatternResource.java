@@ -8,6 +8,7 @@ import Patterns.Pattern;
 import Requests.PatternRequest;
 import Responses.MessageChangeResponse;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -30,6 +31,7 @@ public class PatternResource {
         MessageChangeResponse MessageChangeResponse = pattern.addPattern(addPatternRequest);
 
         if (MessageChangeResponse.isChanged()) {
+            LOG.info("Pattern added successfully");
             return Response.status(Response.Status.OK).entity(MessageChangeResponse).build();
         } else {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(MessageChangeResponse).build();
@@ -51,6 +53,21 @@ public class PatternResource {
         }
     }
 
+    @Path("/getPatternID")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getPatternID(String patternName) {
+        LOG.info(patternName);
+        Pattern pattern = new Pattern();
+        try {
+            int patternID = pattern.getPatternID(patternName);
+            return Response.status(Response.Status.OK).entity(patternID).build();
+        } catch (Exception e) {
+            LOG.error("Error getting pattern ID: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
     @Path("/updatePattern")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -66,7 +83,7 @@ public class PatternResource {
     }
 
     @Path("/deletePattern")
-    @POST
+    @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deletePattern(int patternId) {
         Pattern pattern = new Pattern();
@@ -78,5 +95,4 @@ public class PatternResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-
 }

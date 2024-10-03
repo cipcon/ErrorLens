@@ -100,4 +100,22 @@
   color: #721c24;
 }
 
+.search-container {
+  max-width: 50%;
+  display: flex;
+  margin-bottom: 5px;
+}
 
+.search-container input {
+  max-width: 50%;
+  margin-right: 10px;
+}
+
+.pattern-dropdown li {
+  list-style-type: none;
+}
+
+.pattern-dropdown li:hover {
+  cursor: pointer;
+  background-color: #fff;
+}

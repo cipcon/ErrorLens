@@ -39,7 +39,7 @@ export const ListLogFiles = () => {
 
   const deleteLogFile = async (logFileID: number) => {
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete the ingredient? This action cannot be undone.`
+      `Are you sure you want to delete the log file? This action cannot be undone.`
     );
 
     if (!isConfirmed) return;

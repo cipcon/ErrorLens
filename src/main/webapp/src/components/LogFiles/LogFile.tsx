@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-
-interface Pattern {
+import { AddPatternForm } from "./AddPatternForm";
+export interface Pattern {
   patternId: number;
   patternName: string;
   pattern: string;
@@ -10,13 +10,13 @@ interface Pattern {
   rank: number;
 }
 
-interface PatternLogFileRequest {
+export interface PatternLogFileRequest {
   logFileID: number;
   patternID: number;
   rank: number;
 }
 
-interface DeleteMessageResponse {
+export interface MessageResponse {
   message: string;
   changed: boolean;
 }
@@ -32,12 +32,20 @@ export const LogFile = () => {
   const [allPatterns, setAllPatterns] = useState<Pattern[]>([]);
   const [patterns, setPatterns] = useState<Pattern[]>([]);
   const [logFileID, setLogFileID] = useState<number>(0);
-  const [Message, setMessage] = useState<DeleteMessageResponse>({
+  const [Message, setMessage] = useState<MessageResponse>({
     message: "",
     changed: false,
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null);
+
+  const [selectedPatternId, setSelectedPatternId] = useState<number | null>(
+    null
+  );
+  const newRank =
+    patterns.length > 0 ? patterns[patterns.length - 1].rank + 1 : 1;
+
+  const [isAddPatternModalOpen, setIsAddPatternModalOpen] = useState(false);
 
   useEffect(() => {
     setLogFileID(logFile.logFileID);
@@ -48,17 +56,13 @@ export const LogFile = () => {
     listPatterns();
   }, [logFileID]);
 
-  const handlePatternSelect = (pattern: Pattern) => {
-    console.log("Selected pattern:", pattern); // Add this line for debugging
+  const handlePatternSelect = (pattern: Pattern, patternId: number) => {
     setSelectedPattern(pattern);
+    setSelectedPatternId(patternId);
   };
 
   const addPatternToLogFile = async () => {
-    console.log("selectedPattern", selectedPattern);
     if (!selectedPattern) return;
-
-    const newRank =
-      patterns.length > 0 ? patterns[patterns.length - 1].rank + 1 : 1;
 
     const addPatternRequest: PatternLogFileRequest = {
       logFileID: logFileID,
@@ -180,11 +184,14 @@ export const LogFile = () => {
     setSearchTerm(event.target.value);
   };
 
+  const openAddPatternModal = () => {
+    setIsAddPatternModalOpen(true);
+    console.log("Opening modal"); // Add this line for debugging
+  };
+
   return (
     <div>
       <h3>LogFile: {logFile.logFileName}</h3>
-
-      {/* Search bar and Add button */}
       <div className="search-container">
         <input
           className="form-control"
@@ -200,6 +207,12 @@ export const LogFile = () => {
         >
           Add Pattern
         </button>
+        <button
+          className="btn btn-secondary ml-2"
+          onClick={openAddPatternModal}
+        >
+          Create New Pattern
+        </button>
       </div>
 
       {/* Dropdown for filtered patterns */}
@@ -207,8 +220,14 @@ export const LogFile = () => {
         <ul className="pattern-dropdown">
           {filteredPatterns.map((pattern) => (
             <li
+              style={{
+                backgroundColor:
+                  selectedPatternId === pattern.patternId
+                    ? "#fff"
+                    : "transparent",
+              }}
               key={pattern.patternId}
-              onClick={() => handlePatternSelect(pattern)}
+              onClick={() => handlePatternSelect(pattern, pattern.patternId)}
             >
               {pattern.patternName} - {pattern.pattern} -{" "}
               {pattern.patternDescription} - {pattern.severity}
@@ -218,7 +237,7 @@ export const LogFile = () => {
       )}
 
       <h3>Patterns:</h3>
-      {Message.changed && <p>{Message.message}</p>}
+      {Message && <p>{Message.message}</p>}
       {patterns.length === 0 ? (
         <p>No patterns found.</p>
       ) : (
@@ -253,6 +272,19 @@ export const LogFile = () => {
             ))}
           </tbody>
         </table>
+      )}
+      {isAddPatternModalOpen && (
+        <AddPatternForm
+          onClose={() => {
+            setIsAddPatternModalOpen(false);
+          }}
+          onPatternAdded={() => {
+            setIsAddPatternModalOpen(false);
+            listPatterns();
+          }}
+          logFileID={logFileID}
+          newRank={newRank}
+        />
       )}
     </div>
   );

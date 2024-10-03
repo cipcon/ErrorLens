@@ -7,6 +7,7 @@ import { MainPage } from "./components/MainPage";
 import "./App.css";
 import { LogFile } from "./components/LogFiles/LogFile";
 import { LogEntries } from "./components/LogEntries/LogEntries";
+import { Patterns } from "./components/Patterns/Patterns";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const App: React.FC = () => {
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/logEntries" element={<LogEntries />} />
           <Route path="/logFile" element={<LogFile />} />
+          <Route path="/patterns" element={<Patterns />} />
           <Route
             path="*"
             element={
