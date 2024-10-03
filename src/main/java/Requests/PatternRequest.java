@@ -40,6 +40,9 @@ public class PatternRequest {
         this.rank = rank;
     }
 
+    public PatternRequest() {
+    }
+
     public int getPatternId() {
         return patternId;
     }

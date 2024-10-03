@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.Response;
 public class LogFilePatternResource {
     private static final Logger LOG = Logger.getLogger(LogFilePatternResource.class);
 
-    @Path("/addLogFilePattern")
+    @Path("/addPatternToLogFile")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addPatternToLogFile(PatternLogFileRequest addPatternToLogFile) {
@@ -80,7 +80,8 @@ public class LogFilePatternResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deletePatternFromLogFile(PatternLogFileRequest deletePatternFromLogFile) {
-        LOG.info("Received object from MainPage.tsx: " + deletePatternFromLogFile.getLogFileID());
+        LOG.info("Received object from MainPage.tsx: " + deletePatternFromLogFile.getLogFileID() + " "
+                + deletePatternFromLogFile.getPatternID());
 
         LogFilePattern logFilePattern = new LogFilePattern();
 
@@ -92,22 +93,6 @@ public class LogFilePatternResource {
             LOG.error("Error deleting pattern from log file: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-    }
-
-    public static void main(String[] args) {
-        /*
-         * LogFilePatternResource logFilePatternResource = new LogFilePatternResource();
-         * ArrayList<PatternRequest> patterns = new ArrayList<>();
-         * patterns.add(new PatternRequest(2, 1));
-         * patterns.add(new PatternRequest(3, 2));
-         * patterns.add(new PatternRequest(4, 3));
-         * UpdatePatternsRanksRequest updatePatternsRanksRequest = new
-         * UpdatePatternsRanksRequest(4, patterns);
-         * MessageChangeResponse messageChangeResponse = (MessageChangeResponse)
-         * logFilePatternResource
-         * .updatePatternRanks(updatePatternsRanksRequest).getEntity();
-         * System.out.println(messageChangeResponse.getMessage());
-         */
     }
 
 }

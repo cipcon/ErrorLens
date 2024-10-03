@@ -1,32 +1,96 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 interface Pattern {
   patternId: number;
   patternName: string;
   pattern: string;
-  patternBeschreibung: string;
-  schweregrad: string;
+  patternDescription: string;
+  severity: string;
   rank: number;
 }
 
 interface PatternLogFileRequest {
   logFileID: number;
   patternID: number;
+  rank: number;
+}
+
+interface DeleteMessageResponse {
+  message: string;
+  changed: boolean;
+}
+
+interface UpdatePatternsRanksRequest {
+  logFileID: number;
+  patterns: Pattern[];
 }
 
 export const LogFile = () => {
   const location = useLocation();
   const logFile = location.state?.logFile;
+  const [allPatterns, setAllPatterns] = useState<Pattern[]>([]);
   const [patterns, setPatterns] = useState<Pattern[]>([]);
   const [logFileID, setLogFileID] = useState<number>(0);
+  const [Message, setMessage] = useState<DeleteMessageResponse>({
+    message: "",
+    changed: false,
+  });
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null);
 
   useEffect(() => {
-    fetchPatterns();
-    setLogFileID(logFile.logFileId);
+    setLogFileID(logFile.logFileID);
   }, []);
 
-  const fetchPatterns = async () => {
+  useEffect(() => {
+    fetchLogFilePatterns();
+    listPatterns();
+  }, [logFileID]);
+
+  const handlePatternSelect = (pattern: Pattern) => {
+    console.log("Selected pattern:", pattern); // Add this line for debugging
+    setSelectedPattern(pattern);
+  };
+
+  const addPatternToLogFile = async () => {
+    console.log("selectedPattern", selectedPattern);
+    if (!selectedPattern) return;
+
+    const newRank =
+      patterns.length > 0 ? patterns[patterns.length - 1].rank + 1 : 1;
+
+    const addPatternRequest: PatternLogFileRequest = {
+      logFileID: logFileID,
+      patternID: selectedPattern.patternId,
+      rank: newRank,
+    };
+
+    console.log("addPatternRequest", addPatternRequest);
+
+    try {
+      const response = await fetch("/logFilePattern/addPatternToLogFile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addPatternRequest),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setMessage(data);
+      fetchLogFilePatterns(); // Refresh the list after addition
+      setSelectedPattern(null);
+      setSearchTerm("");
+    } catch (error) {
+      console.error("Error adding pattern:", error);
+      setMessage({ message: "Error adding pattern", changed: true });
+    }
+  };
+
+  const fetchLogFilePatterns = async () => {
     try {
       const response = await fetch("/logFilePattern/getPatternsForLogFile", {
         method: "POST",
@@ -40,15 +104,55 @@ export const LogFile = () => {
       }
       const data = await response.json();
       setPatterns(data);
+      updatePatternRanks(data);
     } catch (error) {
       console.error("Error fetching patterns:", error);
     }
   };
 
+  const listPatterns = async () => {
+    try {
+      const response = await fetch("/pattern/listPatterns");
+      const data = await response.json();
+      setAllPatterns(data);
+    } catch (error) {
+      console.error("Error listing patterns:", error);
+    }
+  };
+
+  const updatePatternRanks = async (patternsToUpdate: Pattern[]) => {
+    const updatedPatterns = patternsToUpdate.map((pattern, index) => ({
+      ...pattern,
+      rank: index + 1,
+    }));
+
+    const updatePatternsRanksRequest: UpdatePatternsRanksRequest = {
+      logFileID: logFileID,
+      patterns: updatedPatterns,
+    };
+
+    try {
+      const response = await fetch("/logFilePattern/updatePatternRanks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatePatternsRanksRequest),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      setPatterns(updatedPatterns);
+    } catch (error) {
+      console.error("Error updating pattern ranks:", error);
+    }
+  };
+
   const deletePattern = async (patternId: number) => {
-    const patternLogFileRequest: PatternLogFileRequest = {
+    const deletePatternFromLogFile: PatternLogFileRequest = {
       logFileID: logFileID,
       patternID: patternId,
+      rank: 0,
     };
     try {
       const response = await fetch("/logFilePattern/deletePatternFromLogFile", {
@@ -56,28 +160,100 @@ export const LogFile = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(patternLogFileRequest),
+        body: JSON.stringify(deletePatternFromLogFile),
       });
-      fetchPatterns(); // Refresh the list after deletion
+      const data = await response.json();
+      setMessage(data);
+      fetchLogFilePatterns(); // Refresh the list after deletion
     } catch (error) {
       console.error("Error deleting pattern:", error);
     }
   };
 
+  const filteredPatterns = useMemo(() => {
+    return allPatterns.filter((pattern) =>
+      pattern.patternName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allPatterns, searchTerm]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <div>
-      <h2>LogFile: {logFile.logFileName}</h2>
+      <h3>LogFile: {logFile.logFileName}</h3>
+
+      {/* Search bar and Add button */}
+      <div className="search-container">
+        <input
+          className="form-control"
+          type="text"
+          placeholder="Search patterns..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <button
+          className="btn btn-primary"
+          onClick={addPatternToLogFile}
+          disabled={!selectedPattern}
+        >
+          Add Pattern
+        </button>
+      </div>
+
+      {/* Dropdown for filtered patterns */}
+      {searchTerm && (
+        <ul className="pattern-dropdown">
+          {filteredPatterns.map((pattern) => (
+            <li
+              key={pattern.patternId}
+              onClick={() => handlePatternSelect(pattern)}
+            >
+              {pattern.patternName} - {pattern.pattern} -{" "}
+              {pattern.patternDescription} - {pattern.severity}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <h3>Patterns:</h3>
-      <ul>
-        {patterns.map((pattern) => (
-          <li key={pattern.patternId}>
-            {pattern.patternName} - {pattern.pattern}
-            <button onClick={() => deletePattern(pattern.patternId)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      {Message.changed && <p>{Message.message}</p>}
+      {patterns.length === 0 ? (
+        <p>No patterns found.</p>
+      ) : (
+        <table className="log-files-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Pattern Name</th>
+              <th>Pattern</th>
+              <th>Beschreibung</th>
+              <th>Schweregrad</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {patterns.map((pattern) => (
+              <tr key={pattern.patternId}>
+                <td>{pattern.rank}</td>
+                <td>{pattern.patternName}</td>
+                <td>{pattern.pattern}</td>
+                <td>{pattern.patternDescription}</td>
+                <td>{pattern.severity}</td>
+                <td>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => deletePattern(pattern.patternId)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

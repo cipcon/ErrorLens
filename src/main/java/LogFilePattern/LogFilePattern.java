@@ -102,11 +102,11 @@ public class LogFilePattern {
 
     // Delete a pattern from a log file. If the pattern is not in the log file, the
     // function will return an error message.
-    public MessageChangeResponse deletePatternFromLogFile(PatternLogFileRequest patternLogFileRequest) {
+    public MessageChangeResponse deletePatternFromLogFile(PatternLogFileRequest deletePatternFromLogFile) {
         String message = "";
         boolean changed = false;
-        boolean patternExists = checkIfPatternIsInLogFile(patternLogFileRequest.getLogFileID(),
-                patternLogFileRequest.getPatternID());
+        boolean patternExists = checkIfPatternIsInLogFile(deletePatternFromLogFile.getLogFileID(),
+                deletePatternFromLogFile.getPatternID());
         if (!patternExists) {
             message = "Das Pattern ist in diesem Logfile nicht vorhanden";
             return new MessageChangeResponse(message, changed);
@@ -114,8 +114,8 @@ public class LogFilePattern {
         try (Connection connection = DBConnection.connectToDB()) {
             String deletePattern = "DELETE FROM logfile_pattern WHERE logfile_id = ? AND pattern_id = ?";
             PreparedStatement statement = connection.prepareStatement(deletePattern);
-            statement.setInt(1, patternLogFileRequest.getLogFileID());
-            statement.setInt(2, patternLogFileRequest.getPatternID());
+            statement.setInt(1, deletePatternFromLogFile.getLogFileID());
+            statement.setInt(2, deletePatternFromLogFile.getPatternID());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 message = "Pattern erfolgreich aus Logfile gelöscht";

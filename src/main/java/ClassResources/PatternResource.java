@@ -51,20 +51,6 @@ public class PatternResource {
         }
     }
 
-    @Path("/listPatternsForLogFile")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response listPatternsForLogFile(int logFileID) {
-        Pattern pattern = new Pattern();
-        try {
-            ArrayList<PatternRequest> allPatterns = pattern.listPatternsForLogFile(logFileID);
-            return Response.status(Response.Status.OK).entity(allPatterns).build();
-        } catch (Exception e) {
-            LOG.error("Error listing patterns for log file: " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
     @Path("/updatePattern")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

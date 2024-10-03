@@ -10,6 +10,9 @@ public class LogFileRequest {
     private java.sql.Date changed;
     private int lastRow;
 
+    public LogFileRequest() {
+    }
+
     public LogFileRequest(String logFileName, String logFilePath, java.sql.Date created, java.sql.Date changed,
             int lastRow) {
         this.logFileName = logFileName;

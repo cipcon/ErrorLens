@@ -57,29 +57,6 @@ public class Pattern {
         return allPatterns;
     }
 
-    public ArrayList<PatternRequest> listPatternsForLogFile(int logFileID) {
-        ArrayList<PatternRequest> allPatterns = new ArrayList<>();
-        try (Connection connection = DBConnection.connectToDB()) {
-            String listFromPatternsForLogFile = "SELECT pattern_name, pattern, pattern_beschreibung, schweregrad FROM pattern WHERE logfile_id = ?";
-            PreparedStatement statement = connection.prepareStatement(listFromPatternsForLogFile);
-            statement.setInt(1, logFileID);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                String patternName = resultSet.getString("pattern_name");
-                String pattern = resultSet.getString("pattern");
-                String patternDescription = resultSet.getString("pattern_beschreibung");
-                String severity = resultSet.getString("schweregrad");
-                PatternRequest addPatternRequest = new PatternRequest(patternName, pattern, patternDescription,
-                        severity);
-                allPatterns.add(addPatternRequest);
-            }
-            return allPatterns;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return allPatterns;
-    }
-
     public MessageChangeResponse updatePattern(PatternRequest updatePatternRequest) {
         String message = "";
         boolean patternUpdated = false;

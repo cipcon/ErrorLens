@@ -5,15 +5,13 @@ public class PatternLogFileRequest {
     private int patternID;
     private int rank;
 
+    public PatternLogFileRequest() {
+    }
+
     public PatternLogFileRequest(int logFileID, int patternID, int rank) {
         this.logFileID = logFileID;
         this.patternID = patternID;
         this.rank = rank;
-    }
-
-    public PatternLogFileRequest(int logFileID, int patternID) {
-        this.logFileID = logFileID;
-        this.patternID = patternID;
     }
 
     public int getLogFileID() {

@@ -24,12 +24,7 @@ export const ListLogFiles = () => {
 
   const fetchLogFiles = async () => {
     try {
-      const response = await fetch("/logFile/listLogFiles", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch("/logFile/listLogFiles");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
