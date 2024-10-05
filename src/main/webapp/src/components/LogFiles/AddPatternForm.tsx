@@ -4,7 +4,8 @@ import { MessageResponse, PatternLogFileRequest } from "./LogFile";
 
 interface AddPatternFormProps {
   onClose: () => void;
-  onPatternAdded: () => void;
+  onPatternAdded?: () => void;
+  onAdded?: () => void;
   logFileID?: number;
   newRank?: number;
 }
@@ -14,6 +15,7 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
   onPatternAdded,
   logFileID,
   newRank,
+  onAdded,
 }) => {
   const [patternName, setPatternName] = useState("");
   const [pattern, setPattern] = useState("");
@@ -39,32 +41,20 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
           severity,
         }),
       });
-      const data = await response.json();
-      setResponseMessage(data.message);
+      const data: MessageResponse = await response.json();
+      setResponseMessage(data);
       console.log(data);
-      if (data.changed) {
-        await handlePatternAdded();
+      if (data.changed && onAdded) {
+        onAdded();
+      } else if (data.changed) {
+        await getPatternID();
       }
     } catch (error) {
       console.error("Error adding new pattern:", error);
     }
   };
 
-  const handlePatternAdded = async () => {
-    if (logFileID == null || newRank == null) {
-      onPatternAdded();
-      return;
-    }
-    try {
-      const patternID = await getPatternID();
-      await addPatternToLogFile(patternID);
-      onPatternAdded();
-    } catch (error) {
-      console.error("Error in handlePatternAdded:", error);
-    }
-  };
-
-  const getPatternID = async (): Promise<number> => {
+  const getPatternID = async () => {
     try {
       const response = await fetch("/pattern/getPatternID", {
         method: "POST",
@@ -73,10 +63,11 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
         },
         body: JSON.stringify(patternName),
       });
-      const data = await response.json();
-      console.log("Pattern Name:", patternName);
+      const data: number = await response.json();
       console.log("Pattern ID:", data);
-      return data;
+      if (data != -1) {
+        await addPatternToLogFile(data);
+      }
     } catch (error) {
       console.error("Error getting pattern ID:", error);
       throw error;
@@ -98,9 +89,11 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
         },
         body: JSON.stringify(addPatternRequest),
       });
-      const data = await response.json();
+      const data: MessageResponse = await response.json();
+      if (data.changed) {
+        onPatternAdded && onPatternAdded();
+      }
       console.log("Pattern added to log file:", data);
-      setResponseMessage(data.message);
     } catch (error) {
       console.error("Error adding pattern to log file:", error);
       throw error;
@@ -149,7 +142,7 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
               Cancel
             </button>
           </div>
-          {responseMessage.changed && <p>{responseMessage.message}</p>}
+          {responseMessage && <p>{responseMessage.message}</p>}
         </form>
       </div>
     </div>

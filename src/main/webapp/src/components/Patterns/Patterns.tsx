@@ -71,7 +71,7 @@ export const Patterns = () => {
       {isAddPatternModalOpen && (
         <AddPatternForm
           onClose={() => setIsAddPatternModalOpen(false)}
-          onPatternAdded={handlePatternAdded}
+          onAdded={handlePatternAdded}
         />
       )}
       {Message.message && <p>{Message.message}</p>}

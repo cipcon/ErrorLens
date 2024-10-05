@@ -111,11 +111,19 @@
   margin-right: 10px;
 }
 
-.pattern-dropdown li {
-  list-style-type: none;
+.pattern-dropdown {
+  padding: 5px;
 }
 
-.pattern-dropdown li:hover {
+.pattern-dropdown li {
+  list-style-type: none;
+  border: 1px solid #000;
+  margin: 5px;
+  padding: 5px;
+}
+
+.pattern-dropdown-item:hover {
   cursor: pointer;
-  background-color: #fff;
+  background-color: #000;
+  color: #007bff;
 }

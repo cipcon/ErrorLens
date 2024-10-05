@@ -220,6 +220,7 @@ export const LogFile = () => {
         <ul className="pattern-dropdown">
           {filteredPatterns.map((pattern) => (
             <li
+              className="pattern-dropdown-item"
               style={{
                 backgroundColor:
                   selectedPatternId === pattern.patternId
