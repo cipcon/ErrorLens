@@ -51,7 +51,7 @@ public class LogFileTests {
     @Test
     void testAddLogFile_Success() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "test.log", "/path/to/test.log",
-                new java.sql.Date(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()));
         when(mockStatement.executeUpdate()).thenReturn(1);
 
         MessageChangeResponse response = logFile.addLogFile(request);
@@ -63,7 +63,7 @@ public class LogFileTests {
     @Test
     void testAddLogFile_NameExists() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "existing.log", "/path/to/existing.log",
-                new java.sql.Date(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()));
 
         // Mock the static method LogFileNameExists
         mockStatic(LogFile.class);
@@ -95,7 +95,7 @@ public class LogFileTests {
     @Test
     void testUpdateLogFile_Success() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "updated.log", "/path/to/updated.log",
-                new java.sql.Date(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()));
         when(mockStatement.executeUpdate()).thenReturn(1);
 
         MessageChangeResponse response = logFile.updateLogFile(request);

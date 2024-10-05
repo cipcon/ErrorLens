@@ -22,6 +22,7 @@ public class LogFileResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addLogFilePath(LogFileRequest addLogFileResponse) {
         LOG.info("Received object from MainPage.tsx: " + addLogFileResponse.getLogFileName());
+        LOG.info("Received object from MainPage.tsx: " + addLogFileResponse.getLogFilePath());
 
         LogFile logFile = new LogFile();
 

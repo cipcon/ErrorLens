@@ -27,40 +27,29 @@ export const AddLogFile = () => {
     }));
   };
 
-  const [file, setFile] = useState<File | null>(null);
-
   const handleLogFilePath = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile); // Store the file in state
-      setAddLogFileRequest((prev) => ({
-        ...prev,
-        logFileName: selectedFile.name, // Use the selected file's name
-      }));
-    }
+    setAddLogFileRequest((prev) => ({
+      ...prev,
+      logFilePath: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file) {
-      alert("Please select a log file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
       const response = await fetch("/logFile/addLogFile", {
         method: "POST",
-        body: formData, // Send the file in a FormData object
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addLogFileRequest),
       });
 
       const data: LogFileAddedResponse = await response.json();
       setLogFileResponse(data);
     } catch (error) {
-      console.error("Error fetching log file:", error);
+      console.error("Error adding log file:", error);
       setLogFileResponse({
         message: "Error adding log file. Please try again.",
         logFileAdded: false,
@@ -84,24 +73,29 @@ export const AddLogFile = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="logFilePath">Log File:</label>
+          <label htmlFor="logFilePath">Log File Path:</label>
           <input
-            className="form-control file-input"
-            type="file"
+            className="form-control"
+            type="text"
             id="logFilePath"
+            value={addLogFileRequest.logFilePath}
             onChange={handleLogFilePath}
             required
           />
         </div>
+
         <button type="submit" className="submit-button">
           Add Log File
         </button>
       </form>
       {logFileResponse.message && (
         <p
-          className={`response-message ${
-            logFileResponse.logFileAdded ? "success" : "error"
-          }`}
+          className="response-message"
+          style={
+            logFileResponse.logFileAdded
+              ? { backgroundColor: "#90EE90", color: "#FFF" }
+              : { backgroundColor: "#556B2F", color: "#FFF" }
+          }
         >
           {logFileResponse.message}
         </p>

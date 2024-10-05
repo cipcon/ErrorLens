@@ -118,7 +118,7 @@ export const ListLogFiles = () => {
                   </p>
                 </td>
                 <td>{logFile.logFilePath}</td>
-                <td>{new Date(logFile.changed).toLocaleDateString()}</td>
+                <td>{new Date(logFile.changed).toLocaleString()}</td>
                 <td>
                   <button
                     className="btn btn-danger"

@@ -1,19 +1,18 @@
 package Requests;
 
-import java.util.Date;
-
 public class LogFileRequest {
     private int logFileID;
     private String logFileName;
     private String logFilePath;
-    private java.sql.Date created;
-    private java.sql.Date changed;
+    private java.sql.Timestamp created;
+    private java.sql.Timestamp changed;
     private int lastRow;
 
     public LogFileRequest() {
     }
 
-    public LogFileRequest(String logFileName, String logFilePath, java.sql.Date created, java.sql.Date changed,
+    public LogFileRequest(String logFileName, String logFilePath, java.sql.Timestamp created,
+            java.sql.Timestamp changed,
             int lastRow) {
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
@@ -22,7 +21,7 @@ public class LogFileRequest {
         this.lastRow = lastRow;
     }
 
-    public LogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Date changed) {
+    public LogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Timestamp changed) {
         this.logFileID = logFileID;
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
@@ -31,6 +30,11 @@ public class LogFileRequest {
 
     public LogFileRequest(int logFileID, String logFileName, String logFilePath) {
         this.logFileID = logFileID;
+        this.logFileName = logFileName;
+        this.logFilePath = logFilePath;
+    }
+
+    public LogFileRequest(String logFileName, String logFilePath) {
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
     }
@@ -59,20 +63,20 @@ public class LogFileRequest {
         this.logFilePath = logFilePath;
     }
 
-    public java.sql.Date getCreated() {
+    public java.sql.Timestamp getCreated() {
         return this.created;
     }
 
-    public void setCreated(Date created) {
-        this.created = (java.sql.Date) created;
+    public void setCreated(java.sql.Timestamp created) {
+        this.created = created;
     }
 
-    public java.sql.Date getChanged() {
+    public java.sql.Timestamp getChanged() {
         return this.changed;
     }
 
-    public void setChanged(Date changed) {
-        this.changed = (java.sql.Date) changed;
+    public void setChanged(java.sql.Timestamp changed) {
+        this.changed = changed;
 
     }
 

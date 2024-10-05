@@ -1,0 +1,7 @@
+2024-09-29 17:08:42,223 INFO  [io.quarkus] (Quarkus Main Thread) LogAnalyzer 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.9.0.CR2) started in 1.755s. Listening on: http://0.0.0.0:8080
+
+2024-09-29 17:08:42,225 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+2024-09-29 17:08:42,226 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [cdi, jdbc-mariadb, rest, rest-client, rest-client-jackson, rest-jackson, smallrye-context-propagation, vertx]
+
+2024-10-05 10:00:00 INFO Starting Application
+2024-10-05 10:01:00 ERROR Something went wrong
