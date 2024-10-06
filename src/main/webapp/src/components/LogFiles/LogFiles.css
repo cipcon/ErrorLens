@@ -35,11 +35,21 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.change-check-interval-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-wrap: nowrap;
+  margin: 15px;
+}
 
-.add-log-file-form h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #333;
+.change-check-interval-form > * {
+  margin-right: 10px;
+}
+
+.change-check-interval-form input, select {
+  max-width: 100px;
 }
 
 .form-group {

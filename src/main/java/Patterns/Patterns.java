@@ -10,7 +10,7 @@ import DBConnection.DBConnection;
 import Requests.PatternRequest;
 import Responses.MessageChangeResponse;
 
-public class Pattern {
+public class Patterns {
     // Add a new pattern to the database
     public MessageChangeResponse addPattern(PatternRequest addPatternRequest) {
         String message = "";

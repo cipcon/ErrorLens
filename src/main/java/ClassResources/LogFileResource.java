@@ -74,4 +74,5 @@ public class LogFileResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+
 }

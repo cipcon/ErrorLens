@@ -92,16 +92,16 @@ export const ListLogFiles = () => {
       )}
       {error && <div style={{ color: "red" }}>{error}</div>}
       {allLogFiles.length === 0 ? (
-        <p>No log files found.</p>
+        <p>Keine Log-Dateien gefunden.</p>
       ) : (
         <table className="log-files-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>File Name</th>
-              <th>File Path</th>
-              <th>Date Changed</th>
-              <th>Delete</th>
+              <th>Dateiname</th>
+              <th>Dateipfad</th>
+              <th>Änderungsdatum</th>
+              <th>Löschen</th>
             </tr>
           </thead>
           <tbody>
@@ -124,7 +124,7 @@ export const ListLogFiles = () => {
                     className="btn btn-danger"
                     onClick={() => deleteLogFile(logFile.logFileID)}
                   >
-                    Delete
+                    Löschen
                   </button>
                 </td>
               </tr>

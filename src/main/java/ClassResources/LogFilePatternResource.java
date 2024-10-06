@@ -42,7 +42,6 @@ public class LogFilePatternResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getPatternsForLogFile(int logFileID) {
-        LOG.info("Received object from MainPage.tsx: " + logFileID);
 
         LogFilePattern logFilePattern = new LogFilePattern();
 

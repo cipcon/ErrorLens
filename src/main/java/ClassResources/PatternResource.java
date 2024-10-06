@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.jboss.logging.Logger;
 
-import Patterns.Pattern;
+import Patterns.Patterns;
 import Requests.PatternRequest;
 import Responses.MessageChangeResponse;
 import jakarta.ws.rs.Consumes;
@@ -26,7 +26,7 @@ public class PatternResource {
     public Response addPattern(PatternRequest addPatternRequest) {
         LOG.info("Received object from MainPage.tsx: " + addPatternRequest.getPatternName());
 
-        Pattern pattern = new Pattern();
+        Patterns pattern = new Patterns();
 
         MessageChangeResponse MessageChangeResponse = pattern.addPattern(addPatternRequest);
 
@@ -42,7 +42,7 @@ public class PatternResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listPatterns() {
-        Pattern pattern = new Pattern();
+        Patterns pattern = new Patterns();
 
         try {
             ArrayList<PatternRequest> allPatterns = pattern.listPatterns();
@@ -58,7 +58,7 @@ public class PatternResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getPatternID(String patternName) {
         LOG.info(patternName);
-        Pattern pattern = new Pattern();
+        Patterns pattern = new Patterns();
         try {
             int patternID = pattern.getPatternID(patternName);
             return Response.status(Response.Status.OK).entity(patternID).build();
@@ -72,7 +72,7 @@ public class PatternResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updatePattern(PatternRequest addPatternRequest) {
-        Pattern pattern = new Pattern();
+        Patterns pattern = new Patterns();
         try {
             MessageChangeResponse MessageChangeResponse = pattern.updatePattern(addPatternRequest);
             return Response.status(Response.Status.OK).entity(MessageChangeResponse).build();
@@ -86,7 +86,7 @@ public class PatternResource {
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deletePattern(int patternId) {
-        Pattern pattern = new Pattern();
+        Patterns pattern = new Patterns();
         try {
             MessageChangeResponse MessageChangeResponse = pattern.deletePattern(patternId);
             return Response.status(Response.Status.OK).entity(MessageChangeResponse).build();
