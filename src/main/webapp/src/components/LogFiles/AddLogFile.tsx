@@ -59,10 +59,10 @@ export const AddLogFile = () => {
 
   return (
     <div className="add-log-file-form">
-      <h3>Add Log File</h3>
+      <h3>Logdatei hinzufügen</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="logFileName">Log File Name:</label>
+          <label htmlFor="logFileName">Logdatei Name:</label>
           <input
             className="form-control"
             type="text"
@@ -73,7 +73,7 @@ export const AddLogFile = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="logFilePath">Log File Path:</label>
+          <label htmlFor="logFilePath">Logdatei Pfad:</label>
           <input
             className="form-control"
             type="text"
@@ -85,7 +85,7 @@ export const AddLogFile = () => {
         </div>
 
         <button type="submit" className="submit-button">
-          Add Log File
+          Logdatei hinzufügen
         </button>
       </form>
       {logFileResponse.message && (

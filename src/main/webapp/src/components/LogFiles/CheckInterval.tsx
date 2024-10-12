@@ -80,9 +80,9 @@ export const CheckInterval = () => {
             setTimeUnit(e.target.value as "HOURS" | "MINUTES" | "SECONDS")
           }
         >
-          <option value="HOURS">Hours</option>
-          <option value="MINUTES">Minutes</option>
-          <option value="SECONDS">Seconds</option>
+          <option value="HOURS">Stunden</option>
+          <option value="MINUTES">Minuten</option>
+          <option value="SECONDS">Sekunden</option>
         </select>
         <button className="btn btn-primary" onClick={() => sendCheckInterval()}>
           Prüfintervall wählen

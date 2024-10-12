@@ -78,7 +78,7 @@ export const Login = () => {
           </div>
         )}
 
-        <h3>Login</h3>
+        <h3>Einloggen</h3>
         <div className="form-group">
           <input
             autoFocus

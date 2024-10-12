@@ -39,7 +39,7 @@ export const ListLogFiles = () => {
 
   const deleteLogFile = async (logFileID: number) => {
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete the log file? This action cannot be undone.`
+      `Sind Sie sicher, dass Sie die Logdatei löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.`
     );
 
     if (!isConfirmed) return;
@@ -86,7 +86,7 @@ export const ListLogFiles = () => {
 
   return (
     <div>
-      <h2>Log Files</h2>
+      <h2>Logdateien</h2>
       {deleteResponse && (
         <div style={{ color: "green" }}>{deleteResponse.message}</div>
       )}

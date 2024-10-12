@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -16,9 +17,10 @@ import java.util.regex.Pattern;
 import DBConnection.DBConnection;
 import LogFilePattern.LogFilePattern;
 import LogFiles.LogFile;
-import Patterns.Patterns;
 import Requests.LogFileRequest;
 import Requests.PatternRequest;
+import Responses.LogentriesResponse;
+import Responses.MessageChangeResponse;
 
 public class LogEntries {
 
@@ -32,43 +34,35 @@ public class LogEntries {
     }
 
     private void processLogFile(LogFileRequest logFile) {
-        Patterns patterns = new Patterns();
         LogFilePattern logFilePattern = new LogFilePattern();
-        ArrayList<PatternRequest> patternsList = patterns.listPatterns();
-        ArrayList<PatternRequest> correctPatterns = logFilePattern.getPatternsForLogFile(logFile.getLogFileID());
-        for (PatternRequest pattern : patternsList) {
-            System.out.println(logFile.getLogFileID() + " All Patterns " + pattern.getPatternId());
+        ArrayList<PatternRequest> patternsForEveryLogfile = logFilePattern
+                .getPatternsForLogFile(logFile.getLogFileID());
+
+        String filePath = logFile.getLogFilePath();
+        System.out.println("Processing log file: " + filePath);
+        int lastProcessedLine = logFile.getLastRow();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int currentLine = 0;
+
+            // Skip to the last processed line
+            while (currentLine < lastProcessedLine && reader.readLine() != null) {
+                currentLine++;
+            }
+
+            while ((line = reader.readLine()) != null) {
+                currentLine++;
+                processLogEntry(line, logFile.getLogFileID(), patternsForEveryLogfile);
+            }
+
+            // Update the last processed line in the database
+            updateLastProcessedLine(logFile.getLogFileID(), currentLine);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        for (PatternRequest pattern : correctPatterns) {
-            System.out.println(logFile.getLogFileID() + " Pattern matches Logfile " + pattern.getPatternId());
-        }
-
-        /*
-         * String filePath = logFile.getLogFilePath();
-         * int lastProcessedLine = logFile.getLastRow();
-         * 
-         * try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-         * String line;
-         * int currentLine = 0;
-         * 
-         * // Skip to the last processed line
-         * while (currentLine < lastProcessedLine && reader.readLine() != null) {
-         * currentLine++;
-         * }
-         * 
-         * while ((line = reader.readLine()) != null) {
-         * currentLine++;
-         * processLogEntry(line, logFile.getLogFileID(), patternsList);
-         * }
-         * 
-         * // Update the last processed line in the database
-         * updateLastProcessedLine(logFile.getLogFileID(), currentLine);
-         * 
-         * } catch (IOException e) {
-         * e.printStackTrace();
-         * }
-         */
     }
 
     private void processLogEntry(String logEntry, int logFileId, ArrayList<PatternRequest> patterns) {
@@ -115,6 +109,31 @@ public class LogEntries {
         }
     }
 
+    public ArrayList<LogentriesResponse> getLogentries() {
+        ArrayList<LogentriesResponse> logentries = new ArrayList<>();
+        try (Connection connection = DBConnection.connectToDB()) {
+            String selectQuery = "SELECT le.logeintrag_id, le.logeintrag_beschreibung, le.gefunden_am, lf.logfile_name, p.pattern_name, p.schweregrad "
+                    + "FROM logeintrag le JOIN logfile lf ON le.logfile_id = lf.logfile_id "
+                    + "JOIN pattern p ON le.pattern_id = p.pattern_id "
+                    + "ORDER BY le.gefunden_am DESC";
+            PreparedStatement statement = connection.prepareStatement(selectQuery);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                LogentriesResponse logentry = new LogentriesResponse();
+                logentry.setLogeintrag_id(resultSet.getInt("logeintrag_id"));
+                logentry.setLogeintrag_beschreibung(resultSet.getString("logeintrag_beschreibung"));
+                logentry.setGefunden_am(resultSet.getDate("gefunden_am"));
+                logentry.setLogfile_name(resultSet.getString("logfile_name"));
+                logentry.setPattern_name(resultSet.getString("pattern_name"));
+                logentry.setSchweregrad(resultSet.getString("schweregrad"));
+                logentries.add(logentry);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return logentries;
+    }
+
     private void updateLastProcessedLine(int logFileId, int lastProcessedLine) {
         String updateQuery = "UPDATE logfile SET letze_zeile = ? WHERE logfile_id = ?";
         try (Connection connection = DBConnection.connectToDB();
@@ -125,6 +144,19 @@ public class LogEntries {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public MessageChangeResponse deleteLogEntry(int logEntryId) {
+        String deleteQuery = "DELETE FROM logeintrag WHERE logeintrag_id = ?";
+        try (Connection connection = DBConnection.connectToDB();
+                PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
+            statement.setInt(1, logEntryId);
+            statement.executeUpdate();
+            return new MessageChangeResponse("Logeintrag erfolgreich gelöscht", true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new MessageChangeResponse("Fehler beim Löschen des Logeintrags", false);
     }
 
     public static void main(String[] args) {

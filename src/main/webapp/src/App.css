@@ -89,3 +89,7 @@ nav {
 .form-logfile label, .form-logfile .btn-primary {
   margin-top: 10px;
 }
+
+.logo {
+  width: 180px;
+}

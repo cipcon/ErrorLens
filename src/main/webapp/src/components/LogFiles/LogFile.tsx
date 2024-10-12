@@ -191,12 +191,12 @@ export const LogFile = () => {
 
   return (
     <div>
-      <h3>LogFile: {logFile.logFileName}</h3>
+      <h3>Logdatei: {logFile.logFileName}</h3>
       <div className="search-container">
         <input
           className="form-control"
           type="text"
-          placeholder="Search patterns..."
+          placeholder="Patterns suchen..."
           value={searchTerm}
           onChange={handleSearchChange}
         />
@@ -205,13 +205,13 @@ export const LogFile = () => {
           onClick={addPatternToLogFile}
           disabled={!selectedPattern}
         >
-          Add Pattern
+          Pattern hinzufügen
         </button>
         <button
           className="btn btn-secondary ml-2"
           onClick={openAddPatternModal}
         >
-          Create New Pattern
+          Neues Patterns erstellen
         </button>
       </div>
 
@@ -240,7 +240,7 @@ export const LogFile = () => {
       <h3>Patterns:</h3>
       {Message && <p>{Message.message}</p>}
       {patterns.length === 0 ? (
-        <p>No patterns found.</p>
+        <p>Keine Patterns gefunden.</p>
       ) : (
         <table className="log-files-table">
           <thead>
@@ -250,7 +250,7 @@ export const LogFile = () => {
               <th>Pattern</th>
               <th>Beschreibung</th>
               <th>Schweregrad</th>
-              <th>Delete</th>
+              <th>Läschen</th>
             </tr>
           </thead>
           <tbody>
@@ -266,7 +266,7 @@ export const LogFile = () => {
                     className="btn btn-danger"
                     onClick={() => deletePattern(pattern.patternId)}
                   >
-                    Delete
+                    Löschen
                   </button>
                 </td>
               </tr>

@@ -50,7 +50,9 @@ public class LogFilePattern {
     public ArrayList<PatternRequest> getPatternsForLogFile(int logFileID) {
         ArrayList<PatternRequest> patterns = new ArrayList<>();
         try (Connection connection = DBConnection.connectToDB()) {
-            String query = "SELECT lp.pattern_id, lp.reihenfolge_platz_pattern, p.pattern_name, p.pattern, p.pattern_beschreibung, p.schweregrad FROM logfile_pattern lp JOIN pattern p ON lp.pattern_id = p.pattern_id WHERE logfile_id = ? ORDER BY reihenfolge_platz_pattern";
+            String query = "SELECT lp.pattern_id, lp.reihenfolge_platz_pattern, p.pattern_name, p.pattern, p.pattern_beschreibung, p.schweregrad "
+                    + "FROM logfile_pattern lp JOIN pattern p ON lp.pattern_id = p.pattern_id WHERE logfile_id = ? "
+                    + "ORDER BY reihenfolge_platz_pattern";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, logFileID);

@@ -103,7 +103,7 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Add New Pattern</h2>
+        <h2>Neues Pattern hinzufügen</h2>
         <form onSubmit={handleSubmit}>
           <input
             autoFocus
@@ -121,25 +121,29 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
             required
           />
           <textarea
-            placeholder="Pattern Description"
+            style={{ maxHeight: 200, minHeight: 100 }}
+            placeholder="Pattern Beschreibung"
             value={patternDescription}
             onChange={(e) => setPatternDescription(e.target.value)}
             required
           />
           <select
+            style={{ minWidth: 220 }}
             value={severity}
             onChange={(e) => setSeverity(e.target.value)}
             required
           >
-            <option value="">Select Severity</option>
+            <option value="">Schweregrad auswählen</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="HIGH">HIGH</option>
             <option value="CRITICAL">CRITICAL</option>
           </select>
           <div className="button-group">
-            <button type="submit">Add Pattern</button>
-            <button type="button" onClick={onClose}>
-              Cancel
+            <button type="submit" className="btn btn-primary">
+              Pattern hinzufügen
+            </button>
+            <button type="button" className="btn btn-primary" onClick={onClose}>
+              Zurück
             </button>
           </div>
           {responseMessage && <p>{responseMessage.message}</p>}
