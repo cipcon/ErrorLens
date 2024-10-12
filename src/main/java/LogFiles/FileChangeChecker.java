@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import DBConnection.DBConnection;
+import LogEntries.LogEntries;
 import Requests.LogFileRequest;
 import Responses.MessageChangeResponse;
 
@@ -45,6 +46,8 @@ public class FileChangeChecker {
                     if (lastModified.after(logFile.getChanged())) {
                         // File has been modified, update the database
                         updateLastModifiedTime(logFile.getLogFileID(), lastModified);
+                        LogEntries logEntries = new LogEntries();
+                        logEntries.processLogFile(logFile);
                     }
                 }
             } catch (IOException e) {

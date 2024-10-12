@@ -1,6 +1,7 @@
 package LogEntries;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 
 import DBConnection.DBConnection;
 import LogFilePattern.LogFilePattern;
-import LogFiles.LogFile;
+import LogFiles.FileChangeChecker;
 import Requests.LogFileRequest;
 import Requests.PatternRequest;
 import Responses.LogentriesResponse;
@@ -26,23 +27,28 @@ public class LogEntries {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public void processAllLogFiles() {
-        ArrayList<LogFileRequest> logFiles = LogFile.listLogFiles();
-        for (LogFileRequest logFile : logFiles) {
-            processLogFile(logFile);
-        }
-    }
+    /*
+     * public void processAllLogFiles() {
+     * ArrayList<LogFileRequest> logFiles = LogFile.listLogFiles();
+     * for (LogFileRequest logFile : logFiles) {
+     * processLogFile(logFile);
+     * }
+     * }
+     */
 
-    private void processLogFile(LogFileRequest logFile) {
+    public void processLogFile(LogFileRequest logFile) {
         LogFilePattern logFilePattern = new LogFilePattern();
-        ArrayList<PatternRequest> patternsForEveryLogfile = logFilePattern
+        ArrayList<PatternRequest> patterns = logFilePattern
                 .getPatternsForLogFile(logFile.getLogFileID());
 
-        String filePath = logFile.getLogFilePath();
-        System.out.println("Processing log file: " + filePath);
+        for (PatternRequest pattern : patterns) {
+            System.out.println("Pattern: " + pattern.getPattern());
+        }
+        String filePath = FileChangeChecker.convertToWSLPath(logFile.getLogFilePath());
+        File file = new File(filePath);
         int lastProcessedLine = logFile.getLastRow();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             int currentLine = 0;
 
@@ -53,7 +59,7 @@ public class LogEntries {
 
             while ((line = reader.readLine()) != null) {
                 currentLine++;
-                processLogEntry(line, logFile.getLogFileID(), patternsForEveryLogfile);
+                processLogEntry(line, logFile.getLogFileID(), patterns);
             }
 
             // Update the last processed line in the database
@@ -96,7 +102,12 @@ public class LogEntries {
     }
 
     private void insertLogEntry(String entry, int logFileId, int patternId, LocalDateTime entryDate) {
-        String insertQuery = "INSERT INTO logeintrag (entry, logfile_id, pattern_id, entry_date) VALUES (?, ?, ?, ?)";
+        if (checkforDuplicate(entry, logFileId)) {
+            System.out.println("Log entry already exists: " + entry);
+            return;
+        }
+
+        String insertQuery = "INSERT INTO logeintrag (logeintrag_beschreibung, logfile_id, pattern_id, gefunden_am) VALUES (?, ?, ?, ?)";
         try (Connection connection = DBConnection.connectToDB();
                 PreparedStatement statement = connection.prepareStatement(insertQuery)) {
             statement.setString(1, entry);
@@ -107,6 +118,23 @@ public class LogEntries {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean checkforDuplicate(String entry, int logFileId) {
+        String selectQuery = "SELECT COUNT(*) FROM logeintrag WHERE logeintrag_beschreibung = ? AND logfile_id = ?";
+        try (Connection connection = DBConnection.connectToDB();
+                PreparedStatement statement = connection.prepareStatement(selectQuery)) {
+            statement.setString(1, entry);
+            statement.setInt(2, logFileId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public ArrayList<LogentriesResponse> getLogentries() {
@@ -157,10 +185,5 @@ public class LogEntries {
             e.printStackTrace();
         }
         return new MessageChangeResponse("Fehler beim Löschen des Logeintrags", false);
-    }
-
-    public static void main(String[] args) {
-        LogEntries logEntries = new LogEntries();
-        logEntries.processAllLogFiles();
     }
 }
