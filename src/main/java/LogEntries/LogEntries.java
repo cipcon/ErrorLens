@@ -68,8 +68,36 @@ public class LogEntries {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    /////////////////////////////////////////////////////////////////////////
+    public void processLogFileWithoutCheckingLastRow(LogFileRequest logFile, PatternRequest patternDetails) {
+        System.out.println("Processing log file without checking last row: " + logFile.getLogFileName() + " with ID: "
+                + logFile.getLogFileID() + " and path: " + logFile.getLogFilePath() + " and last row: "
+                + logFile.getLastRow());
+
+        String filePath = FileChangeChecker.convertToWSLPath(logFile.getLogFilePath());
+        File file = new File(filePath);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                LocalDateTime entryDate = extractDate(line);
+                if (entryDate == null) {
+                    continue; // Skip entries without a valid date, but continue processing
+                }
+
+                if (matchPattern(line, patternDetails.getPattern())) {
+                    insertLogEntry(line, logFile.getLogFileID(), patternDetails.getPatternId(), entryDate);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
 
     private void processLogEntry(String logEntry, int logFileId, ArrayList<PatternRequest> patterns) {
         LocalDateTime entryDate = extractDate(logEntry);

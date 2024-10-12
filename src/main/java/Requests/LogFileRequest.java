@@ -21,11 +21,13 @@ public class LogFileRequest {
         this.lastRow = lastRow;
     }
 
-    public LogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Timestamp changed) {
+    public LogFileRequest(int logFileID, String logFileName, String logFilePath, java.sql.Timestamp changed,
+            int lastRow) {
         this.logFileID = logFileID;
         this.logFileName = logFileName;
         this.logFilePath = logFilePath;
         this.changed = changed;
+        this.lastRow = lastRow;
     }
 
     public LogFileRequest(int logFileID, String logFileName, String logFilePath) {

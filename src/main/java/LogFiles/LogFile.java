@@ -8,6 +8,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import DBConnection.DBConnection;
@@ -49,11 +50,6 @@ public class LogFile {
 
         Path path = Paths.get(wslPath);
         boolean pathExists = Files.exists(path);
-
-        System.out.println("Original path: " + originalPath);
-        System.out.println("Converted WSL path: " + wslPath);
-        System.out.println("Path exists (WSL): " + pathExists);
-        System.out.println("Absolute path: " + path.toAbsolutePath().toString());
 
         if (!pathExists) {
             // If WSL path doesn't exist, try the original Windows path
@@ -131,7 +127,7 @@ public class LogFile {
     // filtered).
     public static ArrayList<LogFileRequest> listLogFiles() {
         ArrayList<LogFileRequest> allLogFiles = new ArrayList<>();
-        String listFromLogFiles = "SELECT logfile_id, logfile_name, logfile_pfad, geaendert_am FROM logfile";
+        String listFromLogFiles = "SELECT logfile_id, logfile_name, logfile_pfad, geaendert_am, letze_zeile FROM logfile";
 
         try (Connection connection = DBConnection.connectToDB()) {
             PreparedStatement statement = connection.prepareStatement(listFromLogFiles);
@@ -141,8 +137,9 @@ public class LogFile {
                 String logFileName = resultSet.getString("logfile_name");
                 String logFilePath = resultSet.getString("logfile_pfad");
                 java.sql.Timestamp changed = resultSet.getTimestamp("geaendert_am");
+                int lastRow = resultSet.getInt("letze_zeile");
                 LogFileRequest addLogFileRequest = new LogFileRequest(logFileID, logFileName, logFilePath,
-                        changed);
+                        changed, lastRow);
                 allLogFiles.add(addLogFileRequest);
             }
             return allLogFiles;
@@ -150,6 +147,28 @@ public class LogFile {
             e.printStackTrace();
         }
         return allLogFiles;
+    }
+
+    public static LogFileRequest getLogFileByID(int logFileID) {
+        LogFileRequest logFileRequest = new LogFileRequest();
+        String selectLogFile = "SELECT logfile_name, logfile_pfad, geaendert_am, erstellungs_datum, letze_zeile FROM logfile WHERE logfile_id = ?";
+        try (Connection connection = DBConnection.connectToDB();
+                PreparedStatement preparedStatement = connection.prepareStatement(selectLogFile)) {
+            preparedStatement.setInt(1, logFileID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                logFileRequest.setLogFileID(logFileID);
+                logFileRequest.setLogFileName(resultSet.getString("logfile_name"));
+                logFileRequest.setLogFilePath(resultSet.getString("logfile_pfad"));
+                logFileRequest.setChanged(resultSet.getTimestamp("geaendert_am"));
+                logFileRequest.setCreated(resultSet.getTimestamp("erstellungs_datum"));
+                logFileRequest.setLastRow(resultSet.getInt("letze_zeile"));
+            }
+            System.out.println("Log file request: " + logFileRequest.getLogFileName());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return logFileRequest;
     }
 
     // Update the name and the path of a log file

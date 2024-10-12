@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import DBConnection.DBConnection;
+import LogEntries.LogEntries;
+import LogFiles.LogFile;
+import Requests.LogFileRequest;
 import Requests.PatternLogFileRequest;
 import Requests.PatternRequest;
 import Requests.UpdatePatternsRanksRequest;
@@ -34,6 +37,11 @@ public class LogFilePattern {
             statement.setInt(3, addPatternToLogFile.getRank());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
+                LogEntries logEntries = new LogEntries();
+                LogFileRequest logFileRequest = LogFile.getLogFileByID(addPatternToLogFile.getLogFileID());
+                LogFilePattern logFilePattern = new LogFilePattern();
+                PatternRequest pattern = logFilePattern.getPatternByID(addPatternToLogFile.getPatternID());
+                logEntries.processLogFileWithoutCheckingLastRow(logFileRequest, pattern);
                 changed = true;
                 message = "Pattern erfolgreich hinzugefügt";
             } else {
@@ -66,6 +74,24 @@ public class LogFilePattern {
             e.printStackTrace();
         }
         return patterns;
+    }
+
+    public PatternRequest getPatternByID(int patternID) {
+        PatternRequest pattern = null;
+        try (Connection connection = DBConnection.connectToDB()) {
+            String query = "SELECT * FROM pattern WHERE pattern_id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, patternID);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                pattern = new PatternRequest(resultSet.getInt("pattern_id"), resultSet.getString("pattern_name"),
+                        resultSet.getString("pattern"), resultSet.getString("pattern_beschreibung"),
+                        resultSet.getString("schweregrad"), 0);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pattern;
     }
 
     // Update the rank of a pattern in a log file
