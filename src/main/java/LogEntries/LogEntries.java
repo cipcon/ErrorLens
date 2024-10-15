@@ -27,15 +27,6 @@ public class LogEntries {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /*
-     * public void processAllLogFiles() {
-     * ArrayList<LogFileRequest> logFiles = LogFile.listLogFiles();
-     * for (LogFileRequest logFile : logFiles) {
-     * processLogFile(logFile);
-     * }
-     * }
-     */
-
     public void processLogFile(LogFileRequest logFile) {
         LogFilePattern logFilePattern = new LogFilePattern();
         ArrayList<PatternRequest> patterns = logFilePattern
@@ -70,7 +61,8 @@ public class LogEntries {
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////
+    // When a pattern is assigned to a logfile, the logfile is filtered starting
+    // from the first row.
     public void processLogFileWithoutCheckingLastRow(LogFileRequest logFile, PatternRequest patternDetails) {
         System.out.println("Processing log file without checking last row: " + logFile.getLogFileName() + " with ID: "
                 + logFile.getLogFileID() + " and path: " + logFile.getLogFilePath() + " and last row: "
@@ -97,7 +89,6 @@ public class LogEntries {
             e.printStackTrace();
         }
     }
-    /////////////////////////////////////////////////////////////////////////
 
     private void processLogEntry(String logEntry, int logFileId, ArrayList<PatternRequest> patterns) {
         LocalDateTime entryDate = extractDate(logEntry);

@@ -3,33 +3,43 @@ import "./AddPatternForm.css";
 import { MessageResponse, PatternLogFileRequest } from "./LogFile";
 
 interface AddPatternFormProps {
+  setPatternAdded: React.Dispatch<React.SetStateAction<AddPatternResponse>>;
   onClose: () => void;
-  onPatternAdded?: () => void;
-  onAdded?: () => void;
   logFileID?: number;
   newRank?: number;
 }
 
+export interface AddPatternResponse {
+  message: string;
+  changed: boolean;
+  patternId: number;
+}
+
+export interface PatternAddedToLogfile {
+  message: string;
+  changed: boolean;
+}
+
 export const AddPatternForm: React.FC<AddPatternFormProps> = ({
+  setPatternAdded,
   onClose,
-  onPatternAdded,
   logFileID,
   newRank,
-  onAdded,
 }) => {
   const [patternName, setPatternName] = useState("");
   const [pattern, setPattern] = useState("");
   const [patternDescription, setPatternDescription] = useState("");
   const [severity, setSeverity] = useState("");
-  const [responseMessage, setResponseMessage] = useState<MessageResponse>({
+  const [responseMessage, setResponseMessage] = useState<AddPatternResponse>({
     message: "",
     changed: false,
+    patternId: 0,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("/pattern/addPattern", {
+      const addResponse = await fetch("/pattern/addPattern", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,46 +51,34 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
           severity,
         }),
       });
-      const data: MessageResponse = await response.json();
-      setResponseMessage(data);
-      console.log(data);
-      if (data.changed && onAdded) {
-        onAdded();
-      } else if (data.changed) {
-        await getPatternID();
+      const addData: AddPatternResponse = await addResponse.json();
+      setResponseMessage(addData);
+      if (addData.changed) {
+        addData.changed && setPatternAdded(addData);
+        addPatternToLogFile(addData.patternId);
+        onClose();
       }
     } catch (error) {
-      console.error("Error adding new pattern:", error);
-    }
-  };
-
-  const getPatternID = async () => {
-    try {
-      const response = await fetch("/pattern/getPatternID", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(patternName),
+      console.error("Error in form submission:", error);
+      setResponseMessage({
+        message: "An error occurred while processing your request",
+        changed: false,
+        patternId: 0,
       });
-      const data: number = await response.json();
-      console.log("Pattern ID:", data);
-      if (data != -1) {
-        await addPatternToLogFile(data);
-      }
-    } catch (error) {
-      console.error("Error getting pattern ID:", error);
-      throw error;
     }
   };
 
-  const addPatternToLogFile = async (patternID: number) => {
+  const addPatternToLogFile = async (patternId: number) => {
+    if (!logFileID) {
+      return;
+    }
+
     const addPatternRequest: PatternLogFileRequest = {
-      logFileID: logFileID || 0,
-      patternID: patternID,
+      logFileID: logFileID,
+      patternID: patternId,
       rank: newRank || 0,
     };
-    console.log("Adding pattern to log file:", addPatternRequest);
+
     try {
       const response = await fetch("/logFilePattern/addPatternToLogFile", {
         method: "POST",
@@ -89,11 +87,10 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
         },
         body: JSON.stringify(addPatternRequest),
       });
-      const data: MessageResponse = await response.json();
-      if (data.changed) {
-        onPatternAdded && onPatternAdded();
+      const data: PatternAddedToLogfile = await response.json();
+      if (!data.changed) {
+        console.error(data.message);
       }
-      console.log("Pattern added to log file:", data);
     } catch (error) {
       console.error("Error adding pattern to log file:", error);
       throw error;
@@ -103,7 +100,7 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Neues Pattern hinzufügen</h2>
+        <h2>Add New Pattern</h2>
         <form onSubmit={handleSubmit}>
           <input
             autoFocus
@@ -142,11 +139,15 @@ export const AddPatternForm: React.FC<AddPatternFormProps> = ({
             <button type="submit" className="btn btn-primary">
               Pattern hinzufügen
             </button>
-            <button type="button" className="btn btn-primary" onClick={onClose}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onClose}
+            >
               Zurück
             </button>
           </div>
-          {responseMessage && <p>{responseMessage.message}</p>}
+          {responseMessage.message && <p>{responseMessage.message}</p>}
         </form>
       </div>
     </div>

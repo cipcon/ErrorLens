@@ -51,7 +51,7 @@ public class LogFileTests {
     @Test
     void testAddLogFile_Success() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "test.log", "/path/to/test.log",
-                new java.sql.Timestamp(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()), 0);
         when(mockStatement.executeUpdate()).thenReturn(1);
 
         MessageChangeResponse response = logFile.addLogFile(request);
@@ -63,7 +63,7 @@ public class LogFileTests {
     @Test
     void testAddLogFile_NameExists() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "existing.log", "/path/to/existing.log",
-                new java.sql.Timestamp(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()), 0);
 
         // Mock the static method LogFileNameExists
         mockStatic(LogFile.class);
@@ -72,7 +72,7 @@ public class LogFileTests {
         MessageChangeResponse response = logFile.addLogFile(request);
 
         assertFalse(response.isChanged());
-        assertEquals("Der Name der Logdatei ist bereits vorhanden. Bitte wählen Sie einen anderen Namen",
+        assertEquals("Der angegebene Dateipfad existiert nicht: " + request.getLogFilePath(),
                 response.getMessage());
     }
 
@@ -95,7 +95,7 @@ public class LogFileTests {
     @Test
     void testUpdateLogFile_Success() throws SQLException {
         LogFileRequest request = new LogFileRequest(1, "updated.log", "/path/to/updated.log",
-                new java.sql.Timestamp(new Date().getTime()));
+                new java.sql.Timestamp(new Date().getTime()), 0);
         when(mockStatement.executeUpdate()).thenReturn(1);
 
         MessageChangeResponse response = logFile.updateLogFile(request);

@@ -43,7 +43,7 @@ public class LogFilePattern {
                 PatternRequest pattern = logFilePattern.getPatternByID(addPatternToLogFile.getPatternID());
                 logEntries.processLogFileWithoutCheckingLastRow(logFileRequest, pattern);
                 changed = true;
-                message = "Pattern erfolgreich hinzugefügt";
+                message = "Pattern wurde hinzugefügt";
             } else {
                 message = "Fehler beim Hinzufügen des Patterns zu dem Logfile";
             }
@@ -115,7 +115,7 @@ public class LogFilePattern {
 
             if (totalRowsAffected == patternsSize) {
                 connection.commit();
-                message = "Reihenfolge der Patterns erfolgreich aktualisiert";
+                message = "Reihenfolge der Patterns wurde aktualisiert";
                 changed = true;
             } else {
                 connection.rollback();
@@ -146,7 +146,7 @@ public class LogFilePattern {
             statement.setInt(2, deletePatternFromLogFile.getPatternID());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                message = "Pattern erfolgreich aus Logfile gelöscht";
+                message = "Pattern wurde gelöscht";
                 changed = true;
             } else {
                 message = "Fehler beim Löschen des Patterns aus dem Logfile";

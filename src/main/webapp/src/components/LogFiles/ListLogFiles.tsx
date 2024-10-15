@@ -14,13 +14,21 @@ interface DeleteResponse {
   message: string;
 }
 
-export const ListLogFiles = () => {
+interface LogfileAdded {
+  logfileAdded: boolean;
+}
+
+export const ListLogFiles: React.FC<LogfileAdded> = ({ logfileAdded }) => {
   const [allLogFiles, setAllLogFiles] = useState<LogFile[]>([]);
   const [deleteResponse, setDeleteResponse] = useState<DeleteResponse | null>(
     null
   );
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchLogFiles();
+  }, [logfileAdded]);
 
   const fetchLogFiles = async () => {
     try {
@@ -72,10 +80,6 @@ export const ListLogFiles = () => {
     fetchLogFiles();
   }, []);
 
-  useEffect(() => {
-    console.log(allLogFiles);
-  }, [allLogFiles]);
-
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -86,11 +90,13 @@ export const ListLogFiles = () => {
 
   return (
     <div>
-      <h2>Logdateien</h2>
-      {deleteResponse && (
-        <div style={{ color: "green" }}>{deleteResponse.message}</div>
-      )}
-      {error && <div style={{ color: "red" }}>{error}</div>}
+      <div className="align-text">
+        <h3>Logdateien</h3>
+        {deleteResponse && (
+          <p style={{ color: "green" }}>{deleteResponse.message}</p>
+        )}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
       {allLogFiles.length === 0 ? (
         <p>Keine Log-Dateien gefunden.</p>
       ) : (

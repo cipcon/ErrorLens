@@ -1,0 +1,18 @@
+.new-and-search {
+  display: flex;
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+.new-and-search button {
+  width: 200px;
+}
+
+.new-and-search input {
+  margin-left: 20px;
+  width: 500px;
+}
+
+.pattern-message-style {
+  margin: 10px 0 0 20px;
+}

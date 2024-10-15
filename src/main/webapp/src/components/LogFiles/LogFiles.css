@@ -48,8 +48,12 @@
   margin-right: 10px;
 }
 
-.change-check-interval-form input, select {
-  max-width: 100px;
+.change-check-interval-form input {
+  max-width: 50px;
+}
+
+.change-check-interval-form select {
+  max-width: fit-content;
 }
 
 .form-group {
@@ -111,6 +115,11 @@
   margin-bottom: 5px;
 }
 
+.search-container-padding {
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
 .search-container input {
   max-width: 50%;
   margin-right: 10px;
@@ -129,6 +138,15 @@
 
 .pattern-dropdown-item:hover {
   cursor: pointer;
-  background-color: #000;
-  color: #007bff;
+  background-color: #FFF;
+}
+
+.alert {
+  margin: 10px 0 0 20px;
+  max-width:fit-content;
+  max-height: 60px;
+}
+
+.align-message {
+  margin-left: 20px;
 }

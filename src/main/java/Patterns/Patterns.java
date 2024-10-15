@@ -18,7 +18,7 @@ public class Patterns {
         boolean patternNameExists = PatternNameExists(addPatternRequest.getPatternName());
         if (patternNameExists) {
             message = "Der Name des Patterns ist bereits vorhanden. Bitte wählen Sie einen anderen Namen";
-            return new MessageChangeResponse(message, patternAdded);
+            return new MessageChangeResponse(message, patternAdded, 0);
         }
         try (Connection connection = DBConnection.connectToDB()) {
             String addPattern = "INSERT INTO pattern (pattern_name, pattern, pattern_beschreibung, schweregrad) VALUES (?, ?, ?, ?)";
@@ -29,17 +29,18 @@ public class Patterns {
             statement.setString(4, addPatternRequest.getSeverity());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                message = "Pattern wurde erfolgreich hinzugefügt";
+                message = "Pattern wurde hinzugefügt";
                 patternAdded = true;
-                return new MessageChangeResponse(message, patternAdded);
+                int patternId = getPatternID(addPatternRequest.getPatternName());
+                return new MessageChangeResponse(message, patternAdded, patternId);
             } else {
                 message = "Pattern konnte nicht hinzugefügt werden";
-                return new MessageChangeResponse(message, patternAdded);
+                return new MessageChangeResponse(message, patternAdded, 0);
             }
         } catch (SQLException e) {
             message = e.getMessage();
         }
-        return new MessageChangeResponse(message, patternAdded);
+        return new MessageChangeResponse(message, patternAdded, 0);
     }
 
     // Return an ArrayList with all patterns from the database
@@ -80,7 +81,7 @@ public class Patterns {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1;
+        return 0;
     }
 
     public MessageChangeResponse updatePattern(PatternRequest updatePatternRequest) {
@@ -102,7 +103,7 @@ public class Patterns {
             statement.setInt(5, updatePatternRequest.getPatternId());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                message = "Pattern wurde erfolgreich aktualisiert";
+                message = "Pattern wurde aktualisiert";
                 patternUpdated = true;
                 return new MessageChangeResponse(message, patternUpdated);
             } else {
@@ -123,7 +124,7 @@ public class Patterns {
             statement.setInt(1, patternId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                message = "Pattern wurde erfolgreich gelöscht";
+                message = "Pattern wurde gelöscht";
                 patternDeleted = true;
                 return new MessageChangeResponse(message, patternDeleted);
             } else {
@@ -150,6 +151,12 @@ public class Patterns {
             e.printStackTrace();
         }
         return exist;
+    }
+
+    public static void main(String[] args) {
+        Patterns patterns = new Patterns();
+        int patternId = patterns.getPatternID("Test");
+        System.out.println(patternId);
     }
 
 }

@@ -1,19 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { MessageResponse, Pattern } from "../LogFiles/LogFile";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  AddPatternResponse,
+  MessageResponse,
+  Pattern,
+} from "../LogFiles/LogFile";
 import { AddPatternForm } from "../LogFiles/AddPatternForm";
 import "../LogFiles/AddPatternForm.css";
+import "./Patterns.css";
 
-export const Patterns = () => {
+export const Patterns: React.FC = () => {
   const [patterns, setPatterns] = useState<Pattern[]>([]);
-  const [Message, setMessage] = useState<MessageResponse>({
+  const [message, setMessage] = useState<MessageResponse>({
     message: "",
     changed: false,
   });
   const [isAddPatternModalOpen, setIsAddPatternModalOpen] = useState(false);
+  const [patternAdded, setPatternAdded] = useState<AddPatternResponse>({
+    message: "",
+    changed: false,
+    patternId: 0,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [added, setAdded] = useState<boolean>(true);
+  const [deleted, setDeleted] = useState<boolean>(false);
 
   useEffect(() => {
     listPatterns();
-  }, []);
+  }, [patternAdded]);
 
   const listPatterns = async () => {
     try {
@@ -26,57 +39,94 @@ export const Patterns = () => {
   };
 
   const deletePattern = async (patternId: number) => {
-    const isConfirmed = window.confirm(
-      `Are you sure you want to delete the pattern? This action cannot be undone.`
-    );
-    console.log("Deleting pattern:", patternId);
-
-    if (!isConfirmed) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this pattern? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
 
     try {
       const response = await fetch("/pattern/deletePattern", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patternId),
       });
       const data = await response.json();
+      setMessage(data);
       if (data.changed) {
-        setMessage(data);
+        setDeleted(true);
         listPatterns();
-      } else {
-        setMessage(data);
       }
     } catch (error) {
       console.error("Error deleting pattern:", error);
     }
   };
 
-  const openAddPatternModal = () => {
-    setIsAddPatternModalOpen(true);
-  };
-
-  const handlePatternAdded = () => {
-    setIsAddPatternModalOpen(false);
-    listPatterns();
-  };
+  const filteredPatterns = useMemo(
+    () =>
+      patterns.filter((pattern) =>
+        pattern.patternName.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [patterns, searchTerm]
+  );
 
   return (
     <div>
-      <h3>Patterns</h3>
-      <button className="btn btn-primary" onClick={openAddPatternModal}>
-        Add New Pattern
-      </button>
+      <div className="new-and-search">
+        <button
+          className="btn btn-primary"
+          onClick={() => setIsAddPatternModalOpen(true)}
+        >
+          Add New Pattern
+        </button>
+        <input
+          className="form-control"
+          type="text"
+          placeholder="Search patterns..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       {isAddPatternModalOpen && (
         <AddPatternForm
+          setPatternAdded={setPatternAdded}
           onClose={() => setIsAddPatternModalOpen(false)}
-          onAdded={handlePatternAdded}
         />
       )}
-      {Message.message && <p>{Message.message}</p>}
-      {patterns.length === 0 ? (
-        <p>No patterns found.</p>
+      {deleted && (
+        <div
+          className=" try alert alert-danger alert-dismissible fade show"
+          role="alert"
+        >
+          <p>{message.message}</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setDeleted(false)}
+          ></button>
+        </div>
+      )}
+      {added && patternAdded.changed && (
+        <div
+          className="alert alert-success alert-dismissible fade show"
+          role="alert"
+        >
+          <p>Neues Pattern wurde hinzugefügt</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setAdded(false)}
+          ></button>
+        </div>
+      )}
+      {filteredPatterns.length === 0 ? (
+        <p className="pattern-message-style">Keine Patterns gefunden</p>
       ) : (
         <table className="log-files-table">
           <thead>
@@ -90,7 +140,7 @@ export const Patterns = () => {
             </tr>
           </thead>
           <tbody>
-            {patterns.map((pattern, index) => (
+            {filteredPatterns.map((pattern, index) => (
               <tr key={pattern.patternId}>
                 <td>{index + 1}</td>
                 <td>{pattern.patternName}</td>

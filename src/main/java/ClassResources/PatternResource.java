@@ -95,4 +95,9 @@ public class PatternResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+
+    public static void main(String[] args) {
+        PatternResource patternResource = new PatternResource();
+        System.out.println(patternResource.getPatternID("Test"));
+    }
 }

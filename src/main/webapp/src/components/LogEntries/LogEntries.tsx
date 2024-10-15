@@ -32,11 +32,12 @@ export const LogEntries = () => {
     });
     const data = await response.json();
     setMessage(data.message);
+    fetchLogentries();
   };
 
   useEffect(() => {
     fetchLogentries();
-  }, [message]);
+  }, []);
 
   return (
     <div>

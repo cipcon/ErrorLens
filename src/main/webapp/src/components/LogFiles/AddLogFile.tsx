@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 interface LogFileAddedResponse {
   message: string;
-  logFileAdded: boolean;
+  changed: boolean;
 }
 
 interface AddLogFileRequest {
@@ -10,10 +10,18 @@ interface AddLogFileRequest {
   logFilePath: string;
 }
 
-export const AddLogFile = () => {
+interface LogfileAdded {
+  logfileAdded: boolean;
+  setLogfileAdded: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const AddLogFile: React.FC<LogfileAdded> = ({
+  logfileAdded,
+  setLogfileAdded,
+}) => {
   const [logFileResponse, setLogFileResponse] = useState<LogFileAddedResponse>({
     message: "",
-    logFileAdded: false,
+    changed: false,
   });
 
   const [addLogFileRequest, setAddLogFileRequest] = useState<AddLogFileRequest>(
@@ -48,11 +56,12 @@ export const AddLogFile = () => {
 
       const data: LogFileAddedResponse = await response.json();
       setLogFileResponse(data);
+      data.changed && setLogfileAdded(true);
     } catch (error) {
       console.error("Error adding log file:", error);
       setLogFileResponse({
         message: "Error adding log file. Please try again.",
-        logFileAdded: false,
+        changed: false,
       });
     }
   };
@@ -92,8 +101,8 @@ export const AddLogFile = () => {
         <p
           className="response-message"
           style={
-            logFileResponse.logFileAdded
-              ? { backgroundColor: "#90EE90", color: "#FFF" }
+            logFileResponse.changed
+              ? { backgroundColor: "#687e42", color: "#FFF" }
               : { backgroundColor: "#556B2F", color: "#FFF" }
           }
         >

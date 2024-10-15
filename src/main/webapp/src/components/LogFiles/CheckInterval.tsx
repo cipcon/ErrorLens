@@ -14,7 +14,6 @@ export const CheckInterval = () => {
     useState<string>("");
 
   const sendCheckInterval = async () => {
-    console.log(checkInterval);
     try {
       const response = await fetch("/fileChangeChecker/checkInterval", {
         method: "POST",
@@ -41,7 +40,6 @@ export const CheckInterval = () => {
       }
       const data = await response.json();
       setCheckIntervalResponse(data.message);
-      console.log(data);
     } catch (error) {
       console.error("Error checking now:", error);
     }
