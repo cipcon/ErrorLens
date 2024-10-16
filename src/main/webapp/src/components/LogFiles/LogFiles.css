@@ -142,11 +142,19 @@
 }
 
 .alert {
-  margin: 10px 0 0 20px;
-  max-width:fit-content;
+  max-width: fit-content;
   max-height: 60px;
 }
 
-.align-message {
+.align-text {
+  padding-left: 20px;
+}
+
+.alert-center-align {
+  display: flex;
+  margin: auto;
+}
+
+.alert-margin-align {
   margin-left: 20px;
 }

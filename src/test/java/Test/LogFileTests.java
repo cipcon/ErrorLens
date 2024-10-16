@@ -50,8 +50,9 @@ public class LogFileTests {
 
     @Test
     void testAddLogFile_Success() throws SQLException {
-        LogFileRequest request = new LogFileRequest(1, "test.log", "/path/to/test.log",
-                new java.sql.Timestamp(new Date().getTime()), 0);
+        LogFileRequest request = new LogFileRequest(1, "test.log",
+                "\\home\\ccon148\\LogAnalyzer\\test-logs\\Quarkus.log",
+                new java.sql.Timestamp(new Date().getTime()), new java.sql.Timestamp(new Date().getTime()), 0);
         when(mockStatement.executeUpdate()).thenReturn(1);
 
         MessageChangeResponse response = logFile.addLogFile(request);
@@ -94,11 +95,11 @@ public class LogFileTests {
 
     @Test
     void testUpdateLogFile_Success() throws SQLException {
-        LogFileRequest request = new LogFileRequest(1, "updated.log", "/path/to/updated.log",
+        LogFileRequest secondRequest = new LogFileRequest(1, "updated.log",
+                "\\\\home\\\\ccon148\\\\LogAnalyzer\\\\test-logs\\\\Quarkus.log",
                 new java.sql.Timestamp(new Date().getTime()), 0);
         when(mockStatement.executeUpdate()).thenReturn(1);
-
-        MessageChangeResponse response = logFile.updateLogFile(request);
+        MessageChangeResponse response = logFile.updateLogFile(secondRequest);
 
         assertTrue(response.isChanged(),
                 "Expected isChanged to be true, but was false. Message: " + response.getMessage());
@@ -134,7 +135,7 @@ public class LogFileTests {
         when(mockResultSet.getString("logfile_name")).thenReturn("existing.log");
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
-        LogFilePathResponse result = LogFile.LogFilePathExists("/path/to/existing.log");
+        LogFilePathResponse result = LogFile.LogFilePathExists("\\home\\ccon148\\LogAnalyzer\\test-logs\\Quarkus.log");
 
         assertTrue(result.isExist());
         assertEquals("existing.log", result.getlogFileName());

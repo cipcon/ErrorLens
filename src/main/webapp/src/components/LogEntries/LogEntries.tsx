@@ -16,7 +16,6 @@ export const LogEntries = () => {
   const fetchLogentries = async () => {
     const response = await fetch("/logEntries/getLogentries");
     const data = await response.json();
-    console.log(data);
     setLogentries(data);
   };
 

@@ -109,7 +109,7 @@ public class LogFile {
             statement.setInt(5, addLogFileResponse.getLastRow());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                message = "Logdatei wurde erfolgreich hinzugefügt";
+                message = "Logdatei wurde hinzugefügt";
                 logFileAdded = true;
                 return new MessageChangeResponse(message, logFileAdded);
             } else {

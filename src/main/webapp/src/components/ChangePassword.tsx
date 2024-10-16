@@ -25,9 +25,6 @@ export const ChangePassword: React.FC = () => {
       });
 
       const data: ChangePasswordResponse = await response.json();
-      console.log("Response status:", response.status);
-      console.log("Response data:", data);
-      console.log(newPassword);
 
       if (response.ok) {
         setChangePasswordResponse(data);

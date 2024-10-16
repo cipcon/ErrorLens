@@ -12,6 +12,7 @@ export const CheckInterval = () => {
   });
   const [checkIntervalResponse, setCheckIntervalResponse] =
     useState<string>("");
+  const [ischanged, setIsChanged] = useState<boolean>(true);
 
   const sendCheckInterval = async () => {
     try {
@@ -89,8 +90,20 @@ export const CheckInterval = () => {
           Jetzt prüfen
         </button>
       </div>
-      {checkIntervalResponse && (
-        <p style={{ textAlign: "center" }}>{checkIntervalResponse}</p>
+      {checkIntervalResponse && ischanged && (
+        <div
+          className="alert-center-align alert alert-success alert-dismissible fade show"
+          role="alert"
+        >
+          <p>{checkIntervalResponse}</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setIsChanged(false)}
+          ></button>
+        </div>
       )}
     </>
   );

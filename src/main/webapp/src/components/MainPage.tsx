@@ -7,10 +7,7 @@ export const MainPage = () => {
   const [logfileAdded, setLogfileAdded] = useState<boolean>(false);
   return (
     <>
-      <AddLogFile
-        logfileAdded={logfileAdded}
-        setLogfileAdded={setLogfileAdded}
-      />
+      <AddLogFile setLogfileAdded={setLogfileAdded} />
       <hr />
       <CheckInterval />
       <hr />

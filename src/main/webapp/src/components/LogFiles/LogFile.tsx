@@ -56,12 +56,8 @@ export const LogFile = () => {
     changed: false,
     patternId: 0,
   });
-  const [isPatternAdded, setIsPatternAdded] = useState<boolean>(true);
+  const [isPatternAdded, setIsPatternAdded] = useState<boolean>(false);
   const [isPatternDeleted, setIsPatternDeleted] = useState<boolean>(false);
-
-  useEffect(() => {
-    setIsAddPatternModalOpen(false);
-  }, [patternAdded]);
 
   useEffect(() => {
     setLogFileID(logFile.logFileID);
@@ -71,6 +67,10 @@ export const LogFile = () => {
     logFileID && fetchLogFilePatterns();
     // eslint-disable-next-line
   }, [logFileID, patternAdded]);
+
+  useEffect(() => {
+    fetchLogFilePatterns();
+  }, [patternAdded.changed]);
 
   const handlePatternSelect = (pattern: Pattern) => {
     setSelectedPattern(pattern);
@@ -233,8 +233,6 @@ export const LogFile = () => {
     updatePatternRanks(newPatterns);
   };
 
-  console.log(patternAdded);
-
   return (
     <div>
       <div className="search-container-padding">
@@ -265,7 +263,7 @@ export const LogFile = () => {
       </div>
       {isPatternDeleted && (
         <div
-          className=" try alert alert-danger alert-dismissible fade show"
+          className=" alert-margin-align alert alert-danger alert-dismissible fade show"
           role="alert"
         >
           <p>{message.message}</p>
@@ -278,9 +276,26 @@ export const LogFile = () => {
           ></button>
         </div>
       )}
+
+      {isPatternAdded && (
+        <div
+          className=" alert-margin-align alert alert-success alert-dismissible fade show"
+          role="alert"
+        >
+          <p>Neues Pattern wurde hinzugefügt</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setIsPatternAdded(false)}
+          ></button>
+        </div>
+      )}
+
       {patternAdded.changed && isPatternAdded && (
         <div
-          className="alert alert-success alert-dismissible fade show"
+          className=" alert-margin-align alert alert-success alert-dismissible fade show"
           role="alert"
         >
           <p>Neues Pattern wurde hinzugefügt</p>
@@ -311,7 +326,7 @@ export const LogFile = () => {
       )}
 
       {patterns.length === 0 ? (
-        <p className="align-message">Keine Patterns gefunden.</p>
+        <p className="alert-margin-align">Keine Patterns gefunden.</p>
       ) : (
         <table className="log-files-table">
           <thead>

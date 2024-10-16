@@ -11,14 +11,10 @@ interface AddLogFileRequest {
 }
 
 interface LogfileAdded {
-  logfileAdded: boolean;
   setLogfileAdded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddLogFile: React.FC<LogfileAdded> = ({
-  logfileAdded,
-  setLogfileAdded,
-}) => {
+export const AddLogFile: React.FC<LogfileAdded> = ({ setLogfileAdded }) => {
   const [logFileResponse, setLogFileResponse] = useState<LogFileAddedResponse>({
     message: "",
     changed: false,
@@ -27,6 +23,7 @@ export const AddLogFile: React.FC<LogfileAdded> = ({
   const [addLogFileRequest, setAddLogFileRequest] = useState<AddLogFileRequest>(
     { logFileName: "", logFilePath: "" }
   );
+  const [ischanged, setIsChanged] = useState<boolean>(false);
 
   const handleLogFileName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddLogFileRequest((prev) => ({
@@ -57,6 +54,7 @@ export const AddLogFile: React.FC<LogfileAdded> = ({
       const data: LogFileAddedResponse = await response.json();
       setLogFileResponse(data);
       data.changed && setLogfileAdded(true);
+      setIsChanged(true);
     } catch (error) {
       console.error("Error adding log file:", error);
       setLogFileResponse({
@@ -97,17 +95,37 @@ export const AddLogFile: React.FC<LogfileAdded> = ({
           Logdatei hinzufügen
         </button>
       </form>
-      {logFileResponse.message && (
-        <p
-          className="response-message"
-          style={
-            logFileResponse.changed
-              ? { backgroundColor: "#687e42", color: "#FFF" }
-              : { backgroundColor: "#556B2F", color: "#FFF" }
-          }
+      {logFileResponse.changed && ischanged && (
+        <div
+          className="alert-center-align alert alert-success alert-dismissible fade show"
+          role="alert"
+          style={{ marginTop: 20 }}
         >
-          {logFileResponse.message}
-        </p>
+          <p>{logFileResponse.message}</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setIsChanged(false)}
+          ></button>
+        </div>
+      )}
+      {!logFileResponse.changed && ischanged && (
+        <div
+          className="alert-center-align alert alert-danger alert-dismissible fade show"
+          role="alert"
+          style={{ marginTop: 20 }}
+        >
+          <p>{logFileResponse.message}</p>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+            onClick={() => setIsChanged(false)}
+          ></button>
+        </div>
       )}
     </div>
   );

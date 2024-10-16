@@ -11,7 +11,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +27,13 @@ import Responses.MessageChangeResponse;
 
 public class LogEntries {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final List<DateTimeFormatter> DATE_FORMATS = new ArrayList<>();
+
+    static {
+        DATE_FORMATS.add(DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z"));
+        DATE_FORMATS.add(DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss.SSSSSS yyyy"));
+        // Add more date formats as needed
+    }
 
     public void processLogFile(LogFileRequest logFile) {
         LogFilePattern logFilePattern = new LogFilePattern();
@@ -104,13 +112,22 @@ public class LogEntries {
     }
 
     private LocalDateTime extractDate(String logEntry) {
-        // Assuming log entries start with a date in the format "YYYY-MM-DD HH:MM:SS"
-        Pattern datePattern = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})");
-        Matcher matcher = datePattern.matcher(logEntry);
-        if (matcher.find()) {
-            String dateStr = matcher.group(1);
-            return LocalDateTime.parse(dateStr, DATE_FORMAT);
+        for (DateTimeFormatter formatter : DATE_FORMATS) {
+            try {
+                // Extract the date string from the log entry
+                Pattern datePattern = Pattern.compile("\\[(.*?)\\]");
+                Matcher matcher = datePattern.matcher(logEntry);
+                if (matcher.find()) {
+                    String dateStr = matcher.group(1);
+                    return LocalDateTime.parse(dateStr, formatter);
+                }
+            } catch (DateTimeParseException e) {
+                // If parsing fails, try the next format
+                continue;
+            }
         }
+        System.out.println("Failed to parse date from log entry: " + logEntry);
+
         return null;
     }
 

@@ -80,7 +80,7 @@ public class FileChangeCheckerLifecycle {
         LOG.info("Checking for changes now.");
         try {
             FileChangeChecker.checkAllFilesForChanges();
-            return Response.status(Response.Status.OK).entity("{\"message\": \"Check completed successfully\"}")
+            return Response.status(Response.Status.OK).entity("{\"message\": \"Logfiles wurden geprüft\"}")
                     .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

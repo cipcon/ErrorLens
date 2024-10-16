@@ -22,7 +22,7 @@ export const Patterns: React.FC = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [added, setAdded] = useState<boolean>(true);
-  const [deleted, setDeleted] = useState<boolean>(false);
+  const [deleted, setDeleted] = useState<boolean>(true);
 
   useEffect(() => {
     listPatterns();
@@ -95,9 +95,9 @@ export const Patterns: React.FC = () => {
           onClose={() => setIsAddPatternModalOpen(false)}
         />
       )}
-      {deleted && (
+      {deleted && message.changed && (
         <div
-          className=" try alert alert-danger alert-dismissible fade show"
+          className=" alert-margin-left-top-align alert alert-danger alert-dismissible fade show"
           role="alert"
         >
           <p>{message.message}</p>
@@ -112,7 +112,7 @@ export const Patterns: React.FC = () => {
       )}
       {added && patternAdded.changed && (
         <div
-          className="alert alert-success alert-dismissible fade show"
+          className=" alert-margin-left-top-align alert alert-success alert-dismissible fade show"
           role="alert"
         >
           <p>Neues Pattern wurde hinzugefügt</p>

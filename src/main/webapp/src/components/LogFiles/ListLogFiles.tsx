@@ -24,6 +24,7 @@ export const ListLogFiles: React.FC<LogfileAdded> = ({ logfileAdded }) => {
     null
   );
   const [error, setError] = useState<string | null>(null);
+  const [ischanged, setIsChanged] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,10 +93,36 @@ export const ListLogFiles: React.FC<LogfileAdded> = ({ logfileAdded }) => {
     <div>
       <div className="align-text">
         <h3>Logdateien</h3>
-        {deleteResponse && (
-          <p style={{ color: "green" }}>{deleteResponse.message}</p>
+        {deleteResponse && ischanged && (
+          <div
+            className="alert alert-danger alert-dismissible fade show"
+            role="alert"
+          >
+            <p>{deleteResponse.message}</p>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+              onClick={() => setIsChanged(false)}
+            ></button>
+          </div>
         )}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && ischanged && (
+          <div
+            className="alert alert-danger alert-dismissible fade show"
+            role="alert"
+          >
+            <p>{error}</p>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+              onClick={() => setIsChanged(false)}
+            ></button>
+          </div>
+        )}
       </div>
       {allLogFiles.length === 0 ? (
         <p>Keine Log-Dateien gefunden.</p>
