@@ -60,11 +60,4 @@ public class LoginService {
         }
         return new LoginResponse(message, passwordMatch, changePassword);
     }
-
-    public static void main(String[] args) {
-        LoginService logIn = new LoginService();
-        System.out.println(logIn.login("Matei").getChangePassword());
-        System.out.println(logIn.login("Matei").getMessage());
-        System.out.println(logIn.login("Matei").getPasswordMatch());
-    }
 }

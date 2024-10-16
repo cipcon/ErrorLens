@@ -41,7 +41,7 @@ export const Patterns: React.FC = () => {
   const deletePattern = async (patternId: number) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this pattern? This action cannot be undone."
+        "Sind Sie sicher, dass Sie das Pattern löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
       )
     ) {
       return;
@@ -146,7 +146,20 @@ export const Patterns: React.FC = () => {
                 <td>{pattern.patternName}</td>
                 <td>{pattern.pattern}</td>
                 <td>{pattern.patternDescription}</td>
-                <td>{pattern.severity}</td>
+                <td
+                  style={{
+                    color:
+                      pattern.severity === "CRITICAL"
+                        ? "#ff0000"
+                        : pattern.severity === "HIGH"
+                        ? "#ff8000"
+                        : pattern.severity === "MEDIUM"
+                        ? "#ffff00"
+                        : "inherit", // Default color if none match
+                  }}
+                >
+                  {pattern.severity}
+                </td>
                 <td>
                   <button
                     className="btn btn-danger"

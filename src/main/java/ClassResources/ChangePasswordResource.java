@@ -1,5 +1,7 @@
 package ClassResources;
 
+import org.jboss.logging.Logger;
+
 import LogIn.ChangePassword;
 import Responses.LoginResponse;
 import jakarta.ws.rs.Consumes;
@@ -10,18 +12,22 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/changePassword")
 public class ChangePasswordResource {
+    private final Logger LOG = Logger.getLogger(LogFilePatternResource.class);
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response changePassword(String newPassword) {
+        LOG.info("Received string from ChangePassword.tsx: " + newPassword);
+        ChangePassword changePasswordObject = new ChangePassword();
+
         try {
-            ChangePassword changePassword = new ChangePassword();
-            LoginResponse loginResponse = changePassword.changePassword(newPassword);
-            if (loginResponse.getPasswordMatch()) {
+            LoginResponse changePasswordResponse = changePasswordObject.changePassword(newPassword);
+            if (changePasswordResponse.getPasswordMatch()) {
                 // Password wasn't changed (same as old password)
-                return Response.status(Response.Status.BAD_REQUEST).entity(loginResponse).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(changePasswordResponse).build();
             } else {
                 // Password was successfully changed
-                return Response.status(Response.Status.OK).entity(loginResponse).build();
+                return Response.status(Response.Status.OK).entity(changePasswordResponse).build();
             }
         } catch (Exception e) {
             // Log the exception for debugging
@@ -31,15 +37,5 @@ public class ChangePasswordResource {
                     .entity(new LoginResponse("Ein unerwarteter Fehler ist aufgetreten.", false))
                     .build();
         }
-    }
-
-    public static void main(String[] args) {
-        ChangePasswordResource changePasswordResource = new ChangePasswordResource();
-        Response response = changePasswordResource.changePassword("1234");
-        System.out.println("Status: " + response.getStatus());
-
-        LoginResponse loginResponse = (LoginResponse) response.getEntity();
-        System.out.println("Message: " + loginResponse.getMessage());
-        System.out.println("Password Match: " + loginResponse.getPasswordMatch());
     }
 }

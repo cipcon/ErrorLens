@@ -30,6 +30,7 @@ public class LogEntries {
     private static final List<DateTimeFormatter> DATE_FORMATS = new ArrayList<>();
 
     static {
+        DATE_FORMATS.add(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         DATE_FORMATS.add(DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z"));
         DATE_FORMATS.add(DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss.SSSSSS yyyy"));
         // Add more date formats as needed
@@ -72,10 +73,6 @@ public class LogEntries {
     // When a pattern is assigned to a logfile, the logfile is filtered starting
     // from the first row.
     public void processLogFileWithoutCheckingLastRow(LogFileRequest logFile, PatternRequest patternDetails) {
-        System.out.println("Processing log file without checking last row: " + logFile.getLogFileName() + " with ID: "
-                + logFile.getLogFileID() + " and path: " + logFile.getLogFilePath() + " and last row: "
-                + logFile.getLastRow());
-
         String filePath = FileChangeChecker.convertToWSLPath(logFile.getLogFilePath());
         File file = new File(filePath);
 
@@ -92,7 +89,6 @@ public class LogEntries {
                     insertLogEntry(line, logFile.getLogFileID(), patternDetails.getPatternId(), entryDate);
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,22 +108,24 @@ public class LogEntries {
     }
 
     private LocalDateTime extractDate(String logEntry) {
-        for (DateTimeFormatter formatter : DATE_FORMATS) {
-            try {
-                // Extract the date string from the log entry
-                Pattern datePattern = Pattern.compile("\\[(.*?)\\]");
-                Matcher matcher = datePattern.matcher(logEntry);
-                if (matcher.find()) {
-                    String dateStr = matcher.group(1);
+        // Define a pattern that matches dates both with and without brackets
+        Pattern datePattern = Pattern.compile("\\[(.*?)\\]|^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})");
+        Matcher matcher = datePattern.matcher(logEntry);
+
+        if (matcher.find()) {
+            String dateStr = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+
+            for (DateTimeFormatter formatter : DATE_FORMATS) {
+                try {
                     return LocalDateTime.parse(dateStr, formatter);
+                } catch (DateTimeParseException e) {
+                    // If parsing fails, try the next format
+                    continue;
                 }
-            } catch (DateTimeParseException e) {
-                // If parsing fails, try the next format
-                continue;
             }
         }
-        System.out.println("Failed to parse date from log entry: " + logEntry);
 
+        System.out.println("Failed to parse date from log entry: " + logEntry);
         return null;
     }
 

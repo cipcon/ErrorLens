@@ -13,7 +13,7 @@
 
 .log-files-table td {
   padding: 12px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #000;
 }
 
 .log-files-link {
@@ -156,5 +156,5 @@
 }
 
 .alert-margin-align {
-  margin-left: 20px;
+  margin: 10px 0 0 20px;
 }

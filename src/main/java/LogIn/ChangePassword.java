@@ -13,9 +13,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ChangePassword {
     public LoginResponse changePassword(String newPassword) {
         LoginService logIn = new LoginService();
-        LoginResponse loginResponse = logIn.login(newPassword);
 
-        if (loginResponse.getPasswordMatch()) {
+        if (logIn.login(newPassword).getPasswordMatch()) {
             return new LoginResponse("Sie haben das gleiche Passwort eingegeben. Bitte wählen Sie ein neues Passwort.",
                     true);
         }
@@ -41,8 +40,9 @@ public class ChangePassword {
 
     public static void main(String[] args) {
         ChangePassword changePassword = new ChangePassword();
-        LoginResponse loginResponse = changePassword.changePassword("1234");
-        System.out.println(loginResponse.getMessage());
-        System.out.println(loginResponse.getPasswordMatch());
+        System.out.println(changePassword.changePassword("1234").getPasswordMatch());
+        System.out.println(changePassword.changePassword("1234").getMessage());
+        // $2a$10$FDHTCfi9MmWj8LCVAKn6ceF09qBlj2rAgNi1HpeH0T8HNqUx5q2M2
+        // $2a$10$FDHTCfi9MmWj8LCVAKn6ceF09qBlj2rAgNi1HpeH0T8HNqUx5q2M2
     }
 }

@@ -34,6 +34,11 @@ interface UpdatePatternsRanksRequest {
   patterns: Pattern[];
 }
 
+interface AlertProperties {
+  changed: boolean;
+  color: "success" | "danger" | "";
+}
+
 export const LogFile = () => {
   const location = useLocation();
   const logFile = location.state?.logFile;
@@ -56,21 +61,24 @@ export const LogFile = () => {
     changed: false,
     patternId: 0,
   });
-  const [isPatternAdded, setIsPatternAdded] = useState<boolean>(false);
-  const [isPatternDeleted, setIsPatternDeleted] = useState<boolean>(false);
+  const [isPatternChanged, setIsPatternChanged] = useState<AlertProperties>({
+    changed: false,
+    color: "",
+  });
 
   useEffect(() => {
     setLogFileID(logFile.logFileID);
   }, [logFile.logFileID]);
 
   useEffect(() => {
-    logFileID && fetchLogFilePatterns();
+    fetchLogFilePatterns();
     // eslint-disable-next-line
-  }, [logFileID, patternAdded]);
+  }, []);
 
   useEffect(() => {
     fetchLogFilePatterns();
-  }, [patternAdded.changed]);
+    // eslint-disable-next-line
+  }, [logFileID, patternAdded.changed]);
 
   const handlePatternSelect = (pattern: Pattern) => {
     setSelectedPattern(pattern);
@@ -98,8 +106,8 @@ export const LogFile = () => {
       }
       const data = await response.json();
       setMessage(data);
-      setIsPatternAdded(true);
       fetchLogFilePatterns(); // Refresh the list after addition
+      setIsPatternChanged({ changed: true, color: "success" });
       setSelectedPattern(null);
       setSearchTerm("");
     } catch (error) {
@@ -171,7 +179,7 @@ export const LogFile = () => {
 
   const deletePattern = async (patternId: number) => {
     const isConfirmed = window.confirm(
-      `Sind Sie sicher, dass Sie den Logeintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.`
+      `Sind Sie sicher, dass Sie das Pattern löschen möchten?`
     );
 
     if (!isConfirmed) return;
@@ -190,7 +198,7 @@ export const LogFile = () => {
       });
       const data = await response.json();
       setMessage(data);
-      setIsPatternDeleted(true);
+      setIsPatternChanged({ changed: true, color: "danger" });
       fetchLogFilePatterns(); // Refresh the list after deletion
     } catch (error) {
       setMessage({
@@ -234,7 +242,7 @@ export const LogFile = () => {
   };
 
   return (
-    <div>
+    <>
       <div className="search-container-padding">
         <h3>Logdatei: {logFile.logFileName}</h3>
         <div className="search-container">
@@ -253,7 +261,7 @@ export const LogFile = () => {
             Pattern hinzufügen
           </button>
           <button
-            className="btn btn-secondary ml-2"
+            className="btn btn-primary ml-2"
             onClick={openAddPatternModal}
             style={{ marginLeft: 10 }}
           >
@@ -261,9 +269,13 @@ export const LogFile = () => {
           </button>
         </div>
       </div>
-      {isPatternDeleted && (
+      {isPatternChanged.changed && (
         <div
-          className=" alert-margin-align alert alert-danger alert-dismissible fade show"
+          className={
+            isPatternChanged.color === "success"
+              ? " alert-margin-align alert alert-success alert-dismissible fade show"
+              : " alert-margin-align alert alert-danger alert-dismissible fade show"
+          }
           role="alert"
         >
           <p>{message.message}</p>
@@ -272,39 +284,25 @@ export const LogFile = () => {
             className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
-            onClick={() => setIsPatternDeleted(false)}
+            onClick={() => setIsPatternChanged({ changed: false, color: "" })}
           ></button>
         </div>
       )}
 
-      {isPatternAdded && (
+      {patternAdded.changed && (
         <div
-          className=" alert-margin-align alert alert-success alert-dismissible fade show"
+          className="alert-margin-align alert alert-success alert-dismissible fade show"
           role="alert"
         >
-          <p>Neues Pattern wurde hinzugefügt</p>
+          <p>{patternAdded.message}</p>
           <button
             type="button"
             className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
-            onClick={() => setIsPatternAdded(false)}
-          ></button>
-        </div>
-      )}
-
-      {patternAdded.changed && isPatternAdded && (
-        <div
-          className=" alert-margin-align alert alert-success alert-dismissible fade show"
-          role="alert"
-        >
-          <p>Neues Pattern wurde hinzugefügt</p>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-            onClick={() => setIsPatternAdded(false)}
+            onClick={() =>
+              setPatternAdded({ message: "", changed: false, patternId: 0 })
+            }
           ></button>
         </div>
       )}
@@ -363,7 +361,21 @@ export const LogFile = () => {
                 <td>{pattern.patternName}</td>
                 <td>{pattern.pattern}</td>
                 <td>{pattern.patternDescription}</td>
-                <td>{pattern.severity}</td>
+                <td
+                  style={{
+                    color:
+                      pattern.severity === "CRITICAL"
+                        ? "#ff0000"
+                        : pattern.severity === "HIGH"
+                        ? "#ff8000"
+                        : pattern.severity === "MEDIUM"
+                        ? "#ffff00"
+                        : "inherit", // Default color if none match
+                  }}
+                >
+                  {pattern.severity}
+                </td>
+
                 <td>
                   <button
                     className="btn btn-danger"
@@ -387,6 +399,6 @@ export const LogFile = () => {
           newRank={newRank}
         />
       )}
-    </div>
+    </>
   );
 };

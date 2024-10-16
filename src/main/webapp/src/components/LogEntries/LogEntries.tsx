@@ -63,7 +63,20 @@ export const LogEntries = () => {
                   <td>{logentry.gefunden_am}</td>
                   <td>{logentry.logfile_name}</td>
                   <td>{logentry.pattern_name}</td>
-                  <td>{logentry.schweregrad}</td>
+                  <td
+                    style={{
+                      color:
+                        logentry.schweregrad === "CRITICAL"
+                          ? "#ff0000"
+                          : logentry.schweregrad === "HIGH"
+                          ? "#ff8000"
+                          : logentry.schweregrad === "MEDIUM"
+                          ? "#ffff00"
+                          : "inherit", // Default color if none match
+                    }}
+                  >
+                    {logentry.schweregrad}
+                  </td>
                   <td>
                     <button
                       className="btn btn-danger"
