@@ -3,6 +3,7 @@ package ClassResources;
 import org.jboss.logging.Logger;
 
 import LogIn.ChangePassword;
+import Requests.PasswordRequest;
 import Responses.LoginResponse;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -16,12 +17,12 @@ public class ChangePasswordResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response changePassword(String newPassword) {
-        LOG.info("Received string from ChangePassword.tsx: " + newPassword);
+    public Response changePassword(PasswordRequest newPassword) {
+        LOG.info("Received string from ChangePassword.tsx: " + newPassword.getPassword());
         ChangePassword changePasswordObject = new ChangePassword();
 
         try {
-            LoginResponse changePasswordResponse = changePasswordObject.changePassword(newPassword);
+            LoginResponse changePasswordResponse = changePasswordObject.changePassword(newPassword.getPassword());
             if (changePasswordResponse.getPasswordMatch()) {
                 // Password wasn't changed (same as old password)
                 return Response.status(Response.Status.BAD_REQUEST).entity(changePasswordResponse).build();

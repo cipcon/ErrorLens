@@ -37,12 +37,4 @@ public class ChangePassword {
             return new LoginResponse(e.getMessage(), false);
         }
     }
-
-    public static void main(String[] args) {
-        ChangePassword changePassword = new ChangePassword();
-        System.out.println(changePassword.changePassword("1234").getPasswordMatch());
-        System.out.println(changePassword.changePassword("1234").getMessage());
-        // $2a$10$FDHTCfi9MmWj8LCVAKn6ceF09qBlj2rAgNi1HpeH0T8HNqUx5q2M2
-        // $2a$10$FDHTCfi9MmWj8LCVAKn6ceF09qBlj2rAgNi1HpeH0T8HNqUx5q2M2
-    }
 }

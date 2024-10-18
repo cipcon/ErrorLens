@@ -21,7 +21,7 @@ export const ChangePassword: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: newPassword, // Send the password as a plain string
+        body: JSON.stringify({ password: newPassword }),
       });
 
       const data: ChangePasswordResponse = await response.json();

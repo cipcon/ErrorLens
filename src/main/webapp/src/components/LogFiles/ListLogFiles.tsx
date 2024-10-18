@@ -125,7 +125,7 @@ export const ListLogFiles: React.FC<LogfileAdded> = ({ logfileAdded }) => {
         )}
       </div>
       {allLogFiles.length === 0 ? (
-        <p>Keine Log-Dateien gefunden.</p>
+        <p style={{ marginLeft: 20 }}>Keine Log-Dateien gefunden.</p>
       ) : (
         <table className="log-files-table">
           <thead>
