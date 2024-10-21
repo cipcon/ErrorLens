@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ListLogFiles } from "./LogFiles/ListLogFiles";
 import { AddLogFile } from "./LogFiles/AddLogFile";
-import { CheckInterval } from "./LogFiles/CheckInterval";
+import { ChangeInterval } from "./LogFiles/ChangeInterval";
 
 export const MainPage = () => {
   const [logfileAdded, setLogfileAdded] = useState<boolean>(false);
@@ -9,7 +9,7 @@ export const MainPage = () => {
     <>
       <AddLogFile setLogfileAdded={setLogfileAdded} />
       <hr />
-      <CheckInterval />
+      <ChangeInterval />
       <hr />
       <ListLogFiles logfileAdded={logfileAdded} />
     </>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./LogEntries.css";
 
 interface LogentriesResponse {
   logeintrag_id: number;
@@ -39,14 +40,14 @@ export const LogEntries = () => {
   }, []);
 
   return (
-    <div>
+    <div className="table-container">
       {message && <div>{message}</div>}
-      <table className="log-files-table">
+      <table className="logentries-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Logeintrag</th>
-            <th style={{ width: "10%" }}>Gefunden am</th>
+            <th>Gefunden am</th>
             <th>Logfile</th>
             <th>Pattern</th>
             <th>Schweregrad</th>
@@ -67,11 +68,11 @@ export const LogEntries = () => {
                     style={{
                       color:
                         logentry.schweregrad === "CRITICAL"
-                          ? "#ff0000"
+                          ? "#cc0000"
                           : logentry.schweregrad === "HIGH"
-                          ? "#ff8000"
+                          ? "#cc7a00"
                           : logentry.schweregrad === "MEDIUM"
-                          ? "#ffff00"
+                          ? "#8B8000"
                           : "inherit", // Default color if none match
                     }}
                   >

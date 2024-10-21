@@ -4,7 +4,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { ChangePassword } from "./components/ChangePassword";
 import { Navbar } from "./components/Navbar";
 import { MainPage } from "./components/MainPage";
-import "./App.css";
 import { LogFile } from "./components/LogFiles/LogFile";
 import { LogEntries } from "./components/LogEntries/LogEntries";
 import { Patterns } from "./components/Patterns/Patterns";

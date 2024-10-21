@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface CheckIntervalProps {
   interval: number;
   timeUnit: "HOURS" | "MINUTES" | "SECONDS";
 }
 
-export const CheckInterval = () => {
+interface GetCheckIntervalProps {
+  interval: number;
+  timeUnit: string;
+  lastCheck: string;
+  timeUntilNextCheck: number;
+}
+
+export const ChangeInterval = () => {
   const [checkInterval, setCheckInterval] = useState<CheckIntervalProps>({
     interval: 0,
     timeUnit: "SECONDS",
@@ -13,10 +20,20 @@ export const CheckInterval = () => {
   const [checkIntervalResponse, setCheckIntervalResponse] =
     useState<string>("");
   const [ischanged, setIsChanged] = useState<boolean>(true);
+  const [actualInterval, setActualInterval] = useState<GetCheckIntervalProps>({
+    interval: 0,
+    timeUnit: "",
+    lastCheck: "",
+    timeUntilNextCheck: 0,
+  });
+
+  useEffect(() => {
+    getCheckInterval();
+  }, [setActualInterval]);
 
   const sendCheckInterval = async () => {
     try {
-      const response = await fetch("/fileChangeChecker/checkInterval", {
+      const response = await fetch("/fileChangeChecker/changeInterval", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,8 +45,22 @@ export const CheckInterval = () => {
       }
       const data = await response.text();
       setCheckIntervalResponse(data);
+      getCheckInterval();
     } catch (error) {
       console.error("Error sending check interval:", error);
+    }
+  };
+
+  const getCheckInterval = async () => {
+    try {
+      const response = await fetch("/fileChangeChecker/getCheckInterval");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: GetCheckIntervalProps = await response.json();
+      setActualInterval(data);
+    } catch (error) {
+      console.error("Error getting the check intervall:", error);
     }
   };
 
@@ -105,6 +136,11 @@ export const CheckInterval = () => {
           ></button>
         </div>
       )}
+      <p style={{ textAlign: "center" }}>
+        Aktuelles Intervall {actualInterval.interval} {actualInterval.timeUnit}.
+        Letze Überprüfung: {actualInterval.lastCheck}. Nächste Überprüfung:{" "}
+        {(actualInterval.timeUntilNextCheck / 3600).toFixed(2)} Stunde(n)
+      </p>
     </>
   );
 };

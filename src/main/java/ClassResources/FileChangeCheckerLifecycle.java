@@ -2,6 +2,7 @@ package ClassResources;
 
 import LogFiles.FileChangeChecker;
 import Requests.IntervalTimeUnitRequest;
+import Responses.CheckIntervalInfo;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.event.Observes;
@@ -42,7 +43,7 @@ public class FileChangeCheckerLifecycle {
 
     // This method is called to start the file change checker with a specified
     // interval and time unit.
-    @Path("/checkInterval")
+    @Path("/changeInterval")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response changeCheckInterval(IntervalTimeUnitRequest intervalTimeUnitRequest) {
@@ -58,6 +59,26 @@ public class FileChangeCheckerLifecycle {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+        }
+    }
+
+    @Path("/getCheckInterval")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCheckInterval() {
+        try {
+            // Fetch the interval information
+            CheckIntervalInfo info = FileChangeChecker.getCheckIntervalInfo();
+
+            // Return the CheckIntervalInfo object as JSON
+            return Response.status(Response.Status.OK)
+                    .entity(info) // Directly returning the object will automatically serialize it to JSON
+                    .build();
+        } catch (Exception e) {
+            // Return the error message as JSON
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
         }
     }
 

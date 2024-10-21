@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./AddPatternForm.css";
-import { MessageResponse, PatternLogFileRequest } from "./LogFile";
+import { PatternLogFileRequest } from "./LogFile";
 
 interface AddPatternFormProps {
   setPatternAdded: React.Dispatch<React.SetStateAction<AddPatternResponse>>;

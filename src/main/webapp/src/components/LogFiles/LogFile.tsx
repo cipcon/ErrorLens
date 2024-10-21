@@ -365,11 +365,11 @@ export const LogFile = () => {
                   style={{
                     color:
                       pattern.severity === "CRITICAL"
-                        ? "#ff0000"
+                        ? "#cc0000"
                         : pattern.severity === "HIGH"
-                        ? "#ff8000"
+                        ? "#cc7a00"
                         : pattern.severity === "MEDIUM"
-                        ? "#ffff00"
+                        ? "#8B8000"
                         : "inherit", // Default color if none match
                   }}
                 >

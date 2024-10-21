@@ -8,6 +8,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,20 +20,57 @@ import java.util.concurrent.TimeUnit;
 import DBConnection.DBConnection;
 import LogEntries.LogEntries;
 import Requests.LogFileRequest;
+import Responses.CheckIntervalInfo;
 import Responses.MessageChangeResponse;
 
 public class FileChangeChecker {
     private static ScheduledExecutorService scheduler;
+    private static Instant lastRunTime;
+    private static long interval;
+    private static TimeUnit timeUnit;
 
-    public static void startFileChangeChecker(long interval, TimeUnit timeUnit) {
+    public static void startFileChangeChecker(long newInterval, TimeUnit newTimeUnit) {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
         }
+
+        interval = newInterval;
+        timeUnit = newTimeUnit;
+
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
-            System.out.println("Running file change check..."); // Add this line for logging
+            System.out.println("Running file change check...");
+            lastRunTime = Instant.now();
             checkAllFilesForChanges();
         }, 0, interval, timeUnit);
+    }
+
+    public static CheckIntervalInfo getCheckIntervalInfo() {
+        if (scheduler == null || scheduler.isShutdown()) {
+            return new CheckIntervalInfo(0, TimeUnit.SECONDS, "Scheduler not running");
+        }
+
+        if (lastRunTime == null) {
+            return new CheckIntervalInfo(interval, timeUnit, "No checks have been run yet");
+        }
+
+        // Calculate how much time is remaining until the next scheduled check
+        Instant now = Instant.now();
+        long timeElapsedSinceLastRun = Duration.between(lastRunTime, now).getSeconds();
+        long timeUntilNextRun = timeUnit.toSeconds(interval) - timeElapsedSinceLastRun;
+
+        // If it's negative, it means the next check is overdue
+        timeUntilNextRun = Math.max(0, timeUntilNextRun);
+
+        // Format the last run time in a human-readable format (e.g., YYYY-MM-DD
+        // HH:mm:ss)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
+        String formattedLastRunTime = formatter.format(lastRunTime);
+
+        System.out.println("Time until next check: " + timeUntilNextRun + " seconds");
+
+        return new CheckIntervalInfo(interval, timeUnit, formattedLastRunTime, timeUntilNextRun);
     }
 
     public static void checkAllFilesForChanges() {

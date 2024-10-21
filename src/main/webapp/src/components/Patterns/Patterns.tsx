@@ -73,7 +73,7 @@ export const Patterns: React.FC = () => {
   );
 
   return (
-    <div>
+    <>
       <div className="new-and-search">
         <button
           className="btn btn-primary"
@@ -150,12 +150,13 @@ export const Patterns: React.FC = () => {
                   style={{
                     color:
                       pattern.severity === "CRITICAL"
-                        ? "#ff0000"
+                        ? "#cc0000"
                         : pattern.severity === "HIGH"
-                        ? "#ff8000"
+                        ? "#cc7a00"
                         : pattern.severity === "MEDIUM"
-                        ? "#ffff00"
+                        ? "#8B8000"
                         : "inherit", // Default color if none match
+                    textDecoration: "bold",
                   }}
                 >
                   {pattern.severity}
@@ -173,6 +174,6 @@ export const Patterns: React.FC = () => {
           </tbody>
         </table>
       )}
-    </div>
+    </>
   );
 };

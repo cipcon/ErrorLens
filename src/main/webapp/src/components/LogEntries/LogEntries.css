@@ -1,0 +1,64 @@
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .logentries-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .logentries-table th,
+  .logentries-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+  }
+  
+  .logentries-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  /* Adjust these widths based on your content needs */
+  .logentries-table th:nth-child(1),
+  .logentries-table td:nth-child(1) {
+    width: 5%;
+    text-align: center;
+  }
+  
+  .logentries-table th:nth-child(2),
+  .logentries-table td:nth-child(2) {
+    width: 45%;
+  }
+  
+  .logentries-table th:nth-child(3),
+  .logentries-table td:nth-child(3) {
+    width: 10%;
+  }
+  
+  .logentries-table th:nth-child(4),
+  .logentries-table td:nth-child(4) {
+    width: 10%;
+  }
+  
+  .logentries-table th:nth-child(5),
+  .logentries-table td:nth-child(5) {
+    width: 10%;
+  }
+  
+  .logentries-table th:nth-child(6),
+  .logentries-table td:nth-child(6) {
+    width: 10%;
+  }
+  
+  .logentries-table th:nth-child(7),
+  .logentries-table td:nth-child(7) {
+    width: 10%;
+  }
