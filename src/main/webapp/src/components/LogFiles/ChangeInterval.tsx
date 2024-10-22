@@ -138,7 +138,7 @@ export const ChangeInterval = () => {
       )}
       <p style={{ textAlign: "center" }}>
         Aktuelles Intervall {actualInterval.interval} {actualInterval.timeUnit}.
-        Letze Überprüfung: {actualInterval.lastCheck}. Nächste Überprüfung:{" "}
+        Letze Überprüfung: {actualInterval.lastCheck}. Nächste Überprüfung in{" "}
         {(actualInterval.timeUntilNextCheck / 3600).toFixed(2)} Stunde(n)
       </p>
     </>
