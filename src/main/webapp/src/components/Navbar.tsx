@@ -42,12 +42,6 @@ export const Navbar: React.FC<LoginResponse> = ({
       {isLoggedIn === "true" ? (
         <div className="nav-padding">
           <nav className="navbar navbar-expand-lg">
-            <div>
-              <a href="/">
-                <img className="logo" src="/logo.svg" alt="Steep logo" />
-              </a>
-            </div>
-
             {changePassword && alertVisibility && (
               <>
                 <div>{changePassword}</div>
