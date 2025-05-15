@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String url = "jdbc:mariadb://localhost:3306/LogAnalyzer";
+    private static final String url = "jdbc:mariadb://localhost:3306/ErrorLens";
     private static final String username = "root";
     private static final String password = "root";
 
