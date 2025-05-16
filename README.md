@@ -6,14 +6,14 @@ ErrorLens ist eine Web-Anwendung zur zentralen Überwachung von Logfiles. Sie er
 
 Features
 
-x Zentrale Verwaltung und Analyse von Log-Dateien
+x Zentrale Verwaltung und Analyse von Log-Dateien;
 
-x Echtzeit-Überwachung und -Analyse von Log-Daten
+x Echtzeit-Überwachung und -Analyse von Log-Daten;
 
-x Filter- und Suchfunktionen, um bestimmte Log-Einträge schnell zu finden
+x Filter- und Suchfunktionen, um bestimmte Log-Einträge schnell zu finden;
 
-x Unterstützung mehrerer Betriebsystemen (Windows, Linux)
+x Unterstützung mehrerer Betriebsystemen (Windows, Linux);
 
-x Benutzerfreundliche Oberfläche mit ReactJS
+x Benutzerfreundliche Oberfläche mit ReactJS;
 
-x Backend in Java mit Quarkus und MariaDB zur Speicherung und Verwaltung der Log-Daten
+x Backend in Java mit Quarkus und MariaDB zur Speicherung und Verwaltung der Log-Daten;
